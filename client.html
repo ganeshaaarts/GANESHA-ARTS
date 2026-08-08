@@ -38,6 +38,201 @@ footer{text-align:center;color:#777;padding:30px}
 
 <section id="login" class="hidden">
 <div class="card"><h2>Client Login</h2><p class="muted">Enter your email and password to continue.</p>
+<form onsubmit="event.preventDefault(); handleLogin();">
+  <label>Email</label><input type="email" id="login-email" placeholder="you@example.com" required>
+  <label>Password</label><input type="password" id="login-password" placeholder="••••••••" required>
+  <button id="login-btn" type="submit">Login</button> 
+  <button type="button" onclick="show('signup')" style="background:#202633">Create account</button>
+</form>
+</div>
+</section>
+
+<section id="signup" class="hidden">
+<div class="card"><h2>Create Client Account</h2>
+<form onsubmit="event.preventDefault(); handleSignup();">
+  <label>Full Name</label><input id="signup-name" placeholder="Full name" required>
+  <label>Email</label><input type="email" id="signup-email" placeholder="Email" required>
+  <label>Phone Number</label><input id="signup-phone" placeholder="Phone number" required>
+  <label>Password</label><input type="password" id="signup-password" placeholder="Create password" required>
+  <button id="signup-btn" type="submit">Create Account</button>
+</form>
+<button type="button" onclick="show('login')" style="background:#202633; margin-top:12px;">Already have an account? Login</button>
+</div>
+</section>
+
+<section id="account" class="hidden">
+<div class="hero"><div class="muted">WELCOME BACK</div><h1 id="user-display-name">My Account</h1><p class="muted">Client dashboard</p></div>
+<div class="grid"><div class="card"><div class="muted">Total Orders</div><div class="stat" id="user-orders-count">0</div></div><div class="card"><div class="muted">Account Status</div><div class="stat" style="font-size:20px; color:#7ee29a;" id="user-status-text">Active</div></div></div>
+<div class="card"><h3>Profile Details</h3><p><b>Name:</b> <span id="profile-name">Loading...</span></p><p><b>Email:</b> <span id="profile-email">Loading...</span></p><p><b>Phone:</b> <span id="profile-phone">Loading...</span></p>
+<button onclick="handleLogout()" style="background:#421a1a; margin-top:10px;">Logout</button>
+</div>
+</section>
+
+<section id="orders" class="hidden"><h2>My Orders</h2><div class="card"><div class="row"><div><b>No orders yet</b><p class="muted">Login and place your first order.</p></div><span class="status">Ready</span></div></div></section>
+
+<section id="support" class="hidden"><h2>Customer Support</h2><div class="card"><p class="muted">AI support is available to logged-in clients.</p><textarea rows="5" placeholder="Describe your problem..."></textarea><button>Send Inquiry</button></div></section>
+
+<section id="reviews" class="hidden"><h2>Customer Reviews</h2>
+<div class="card review"><b>★★★★★</b><p>Great artwork and professional service.</p><small class="muted">Verified customer</small></div>
+<div class="card review"><b>★★★★★</b><p>Beautiful portrait, delivered as promised.</p><small class="muted">Verified customer</small></div>
+</section>
+</main>
+<footer>© Ganesha Arts • Secure Client Portal</footer>
+
+<!-- 1. Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 2. Supabase Configuration Script -->
+<script src="supabase-config.js"></script>
+
+<script>
+// CATCH ANY JAVASCRIPT ERROR INSTANTLY
+window.onerror = function(msg, url, line) {
+    alert("⚠️ JS Error: " + msg + " (Line " + line + ")");
+    return false;
+};
+
+alert("✅ Script Loaded Successfully!");
+
+let currentUser = null;
+
+function show(id){
+ document.querySelectorAll('main section').forEach(x=>x.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ window.scrollTo(0,0);
+}
+
+function checkAuthAndNav() {
+  if(currentUser) {
+    show('account');
+  } else {
+    show('login');
+  }
+}
+
+async function initSession() {
+  if(!window.supabaseClient) {
+    alert("⚠️ System Error: Supabase Client is not initialized! Please check supabase-config.js");
+    return;
+  }
+  try {
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (session && session.user) {
+      currentUser = session.user;
+      loadUserProfile();
+    }
+  } catch(e) {
+    alert("Session Error: " + e.message);
+  }
+}
+
+async function loadUserProfile() {
+  if(!currentUser) return;
+  document.getElementById('profile-email').textContent = currentUser.email;
+  
+  try {
+    const { data } = await window.supabaseClient
+      .from('profiles')
+      .select('*')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+      
+    if (data) {
+      document.getElementById('profile-name').textContent = data.full_name || 'N/A';
+      document.getElementById('profile-phone').textContent = data.phone || 'N/A';
+      document.getElementById('user-display-name').textContent = data.full_name || 'My Account';
+      document.getElementById('user-status-text').textContent = data.account_status || 'Active';
+    } else {
+      document.getElementById('profile-name').textContent = currentUser.user_metadata?.full_name || 'User';
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function handleSignup() {
+  const btn = document.getElementById('signup-btn');
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const password = document.getElementById('signup-password').value;
+
+  alert("🚀 Processing Signup for: " + email);
+
+  btn.textContent = "Creating Account...";
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await window.supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: { data: { full_name: name, phone: phone } }
+    });
+
+    if (error) {
+      alert("❌ Signup Error: " + error.message);
+      return;
+    }
+
+    if (data.user) {
+      await window.supabaseClient
+        .from('profiles')
+        .upsert([{ id: data.user.id, full_name: name, phone: phone, account_status: 'active' }]);
+
+      alert("🎉 Account Created Successfully! Please Login now.");
+      show('login');
+    }
+  } catch (err) {
+    alert("❌ Unexpected Error: " + err.message);
+  } finally {
+    btn.textContent = "Create Account";
+    btn.disabled = false;
+  }
+}
+
+async function handleLogin() {
+  const btn = document.getElementById('login-btn');
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  btn.textContent = "Logging in...";
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      alert("❌ Login Failed: " + error.message);
+      return;
+    }
+
+    currentUser = data.user;
+    await loadUserProfile();
+    alert("✅ Login Successful!");
+    show('account');
+  } catch(err) {
+    alert("❌ Login Error: " + err.message);
+  } finally {
+    btn.textContent = "Login";
+    btn.disabled = false;
+  }
+}
+
+async function handleLogout() {
+  await window.supabaseClient.auth.signOut();
+  currentUser = null;
+  alert("Logged out successfully!");
+  show('home');
+}
+
+window.onload = initSession;
+</script>
+</body>
+</html>
+</section>
+
+<section id="login" class="hidden">
+<div class="card"><h2>Client Login</h2><p class="muted">Enter your email and password to continue.</p>
 <label>Email</label><input type="email" id="login-email" placeholder="you@example.com">
 <label>Password</label><input type="password" id="login-password" placeholder="••••••••">
 <button onclick="handleLogin()">Login</button> <button onclick="show('signup')" style="background:#202633">Create account</button></div>

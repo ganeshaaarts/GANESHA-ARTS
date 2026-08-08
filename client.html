@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ganesha Arts — Client Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b0d12;color:#f5f5f5}
+header{padding:18px 20px;border-bottom:1px solid #252a35;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#0b0d12}
+.logo{font-size:22px;font-weight:800}.logo span{color:#ff6b35}
+button,.btn{border:0;border-radius:10px;padding:12px 16px;background:#ff6b35;color:white;font-weight:700;text-decoration:none;cursor:pointer}
+main{max-width:900px;margin:auto;padding:24px 18px}.hero{padding:28px 0}.hero h1{font-size:34px;margin:8px 0}.muted{color:#9da4b2}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.card{background:#151922;border:1px solid #272d39;border-radius:16px;padding:18px;margin:14px 0}
+.stat{font-size:28px;font-weight:800;margin-top:8px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.status{padding:6px 10px;border-radius:20px;background:#17351f;color:#7ee29a;font-size:13px}.review{border-left:3px solid #ff6b35;padding-left:14px;margin:14px 0}
+input,select,textarea{width:100%;padding:13px;margin:7px 0 14px;border-radius:10px;border:1px solid #303746;background:#0f1218;color:#fff}
+.nav{display:flex;gap:8px;overflow:auto}.nav button{background:#202633;white-space:nowrap}.nav button.active{background:#ff6b35}
+.hidden{display:none}.notice{background:#241c14;border:1px solid #5b3a20;padding:14px;border-radius:12px}
+footer{text-align:center;color:#777;padding:30px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<header><div class="logo">GANESHA<span>ARTS</span></div><button onclick="show('account')">My Account</button></header>
+<main>
+<section id="home">
+<div class="hero"><div class="muted">CLIENT PORTAL</div><h1>Your artwork. Your orders. One place.</h1><p class="muted">Login to place orders, upload payment slips, track payments and chat with support.</p><button onclick="show('login')">Login / Create Account</button></div>
+<div class="nav"><button class="active" onclick="show('home')">Home</button><button onclick="show('orders')">Orders</button><button onclick="show('support')">Support</button><button onclick="show('reviews')">Reviews</button></div>
+<div class="notice">🔔 <b>Important:</b> You must be logged in to place an order. Public reviews remain visible to everyone.</div>
+<div class="grid">
+<div class="card"><div class="muted">Orders</div><div class="stat">0</div></div>
+<div class="card"><div class="muted">Payment Status</div><div class="stat">—</div></div>
+</div>
+</section>
+
+<section id="login" class="hidden">
+<div class="card"><h2>Client Login</h2><p class="muted">Create an account or login to continue.</p>
+<label>Email</label><input type="email" placeholder="you@example.com">
+<label>Password</label><input type="password" placeholder="••••••••">
+<button onclick="show('account')">Login</button> <button onclick="show('signup')" style="background:#202633">Create account</button></div>
+</section>
+
+<section id="signup" class="hidden">
+<div class="card"><h2>Create Client Account</h2>
+<input placeholder="Full name"><input type="email" placeholder="Email"><input placeholder="Phone number"><input type="password" placeholder="Create password">
+<button onclick="show('account')">Create Account</button></div>
+</section>
+
+<section id="account" class="hidden">
+<div class="hero"><div class="muted">WELCOME BACK</div><h1>My Account</h1><p class="muted">Client dashboard</p></div>
+<div class="grid"><div class="card"><div class="muted">Total Orders</div><div class="stat">0</div></div><div class="card"><div class="muted">Pending Payment</div><div class="stat">₹0</div></div></div>
+<div class="card"><h3>Profile</h3><p>Name: Your Name</p><p>Email: your@email.com</p><p>Account status: <span class="status">Active</span></p></div>
+<div class="card"><h3>Payment Slip</h3><p class="muted">Upload your payment proof after payment.</p><input type="file" accept="image/*,.pdf"><button>Upload Slip</button></div>
+</section>
+
+<section id="orders" class="hidden"><h2>My Orders</h2><div class="card"><div class="row"><div><b>No orders yet</b><p class="muted">Login and place your first order.</p></div><span class="status">Ready</span></div></div></section>
+
+<section id="support" class="hidden"><h2>Customer Support</h2><div class="card"><p class="muted">AI support is available to logged-in clients.</p><textarea rows="5" placeholder="Describe your problem..."></textarea><button>Send Inquiry</button></div></section>
+
+<section id="reviews" class="hidden"><h2>Customer Reviews</h2>
+<div class="card review"><b>★★★★★</b><p>Great artwork and professional service.</p><small class="muted">Verified customer</small></div>
+<div class="card review"><b>★★★★★</b><p>Beautiful portrait, delivered as promised.</p><small class="muted">Verified customer</small></div>
+</section>
+</main>
+<footer>© Ganesha Arts • Secure Client Portal</footer>
+<script>
+function show(id){
+ document.querySelectorAll('main section').forEach(x=>x.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

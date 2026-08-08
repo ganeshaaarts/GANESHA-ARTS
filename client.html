@@ -261,6 +261,7 @@
     border: 2px solid rgba(26,26,36,0.3);
     border-top-color: #1a1a24;
     animation: spin 0.7s linear infinite;
+    display: inline-block;
   }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
@@ -417,4 +418,133 @@
       <div class="ic">💬</div>
       <div><div class="t">Support</div><div class="d">Chat with artisans</div></div>
     </button>
-    <button class="action-card" onclick="window.__nav(
+    <button class="action-card" onclick="window.__nav('reviews')">
+      <div class="ic">⭐</div>
+      <div><div class="t">Reviews</div><div class="d">Share your experience</div></div>
+    </button>
+  </div>
+</section>
+
+<!-- ORDERS -->
+<section id="section-orders" class="section container hidden">
+  <div class="dash-header">
+    <div><h1>My Orders</h1><div class="welcome">Your sacred creations, tracked with care.</div></div>
+    <button class="btn btn-ghost" onclick="window.__nav('dashboard')">← Dashboard</button>
+  </div>
+  <div class="empty-state">
+    <div class="ic">📦</div>
+    <h3>No orders yet</h3>
+    <p>Once you place your first order, it will appear here.</p>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section id="section-support" class="section container hidden">
+  <div class="dash-header">
+    <div><h1>Support</h1><div class="welcome">We're here to help — day or night.</div></div>
+    <button class="btn btn-ghost" onclick="window.__nav('dashboard')">← Dashboard</button>
+  </div>
+  <div class="empty-state">
+    <div class="ic">💬</div>
+    <h3>Support chat coming soon</h3>
+    <p>For now, reach us at <span style="color:var(--accent)">support@ganeshaarts.com</span></p>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="section-reviews" class="section container hidden">
+  <div class="dash-header">
+    <div><h1>Reviews</h1><div class="welcome">Your voice, our inspiration.</div></div>
+    <button class="btn btn-ghost" onclick="window.__nav('dashboard')">← Dashboard</button>
+  </div>
+  <div class="empty-state">
+    <div class="ic">⭐</div>
+    <h3>No reviews yet</h3>
+    <p>Complete an order to leave your first review.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  ॥ Ganesha Arts ॥ &nbsp;•&nbsp; Crafted with devotion &nbsp;•&nbsp; © <span id="year"></span>
+</footer>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase config -->
+<script src="supabase-config.js"></script>
+
+<script>
+// Global Safe Nav Declaration (Ensures buttons ALWAYS work immediately)
+window.__nav = function(target) {
+  const sections = ['home', 'login', 'signup', 'dashboard', 'orders', 'support', 'reviews'];
+  if (!sections.includes(target)) target = 'home';
+  sections.forEach((s) => {
+    const el = document.getElementById('section-' + s);
+    if (!el) return;
+    if (s === target) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+(function() {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+
+  const yrEl = $('year');
+  if (yrEl) yrEl.textContent = new Date().getFullYear();
+
+  function assertClient() {
+    if (!window.supabaseClient) {
+      alert('Supabase client not initialised. Ensure supabase-config.js loads correctly.');
+      return false;
+    }
+    return true;
+  }
+
+  function setAuthedUI(user) {
+    const authed = !!user;
+    if ($('nav-login')) $('nav-login').classList.toggle('hidden', authed);
+    if ($('nav-signup')) $('nav-signup').classList.toggle('hidden', authed);
+    if ($('nav-dashboard')) $('nav-dashboard').classList.toggle('hidden', !authed);
+    if ($('nav-logout')) $('nav-logout').classList.toggle('hidden', !authed);
+
+    if (authed) {
+      const meta = user.user_metadata || {};
+      if ($('dash-username')) $('dash-username').textContent = meta.full_name || (user.email ? user.email.split('@')[0] : 'Devotee');
+      if ($('dash-email')) $('dash-email').textContent = user.email || '';
+    }
+  }
+
+  function setLoading(btn, isLoading, labelIdle) {
+    if (!btn) return;
+    btn.disabled = isLoading;
+    if (isLoading) {
+      btn.dataset._label = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> Please wait…';
+    } else {
+      btn.innerHTML = btn.dataset._label || labelIdle;
+    }
+  }
+
+  // ---------- Signup ----------
+  async function handleSignup(e) {
+    e.preventDefault();
+    if (!assertClient()) return;
+
+    const btn = $('btn-signup');
+    const fullName = $('signup-name').value.trim();
+    const phone    = $('signup-phone').value.trim();
+    const email    = $('signup-email').value.trim();
+    const password = $('signup-password').value;
+
+    if (!fullName || !phone || !email || !password) {
+      alert('Please fill in all fields.'); return;
+    }
+
+    setLoading(btn, true, 'Create Account');
+    try {
+      const { data, error } = await window.supabaseClient.auth.signUp({
+        email,
+   

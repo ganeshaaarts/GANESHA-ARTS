@@ -21,36 +21,44 @@ footer{text-align:center;color:#777;padding:30px}
 </style>
 </head>
 <body>
-<header><div class="logo">GANESHA<span>ARTS</span></div><button onclick="show('account')">My Account</button></header>
+<header>
+  <div class="logo">GANESHA<span>ARTS</span></div>
+  <button id="auth-nav-btn" onclick="checkAuthAndNav()">My Account</button>
+</header>
 <main>
 <section id="home">
-<div class="hero"><div class="muted">CLIENT PORTAL</div><h1>Your artwork. Your orders. One place.</h1><p class="muted">Login to place orders, upload payment slips, track payments and chat with support.</p><button onclick="show('login')">Login / Create Account</button></div>
+<div class="hero"><div class="muted">CLIENT PORTAL</div><h1>Your artwork. Your orders. One place.</h1><p class="muted">Login to place orders, track payments and chat with support.</p><button onclick="show('login')">Login / Create Account</button></div>
 <div class="nav"><button class="active" onclick="show('home')">Home</button><button onclick="show('orders')">Orders</button><button onclick="show('support')">Support</button><button onclick="show('reviews')">Reviews</button></div>
-<div class="notice">🔔 <b>Important:</b> You must be logged in to place an order. Public reviews remain visible to everyone.</div>
+<div class="notice" style="margin-top:14px;">🔔 <b>Important:</b> You must be logged in to place an order. Public reviews remain visible to everyone.</div>
 <div class="grid">
-<div class="card"><div class="muted">Orders</div><div class="stat">0</div></div>
-<div class="card"><div class="muted">Payment Status</div><div class="stat">—</div></div>
+<div class="card"><div class="muted">Orders</div><div class="stat" id="home-orders-count">0</div></div>
+<div class="card"><div class="muted">Payment Status</div><div class="stat" id="home-payment-status">—</div></div>
 </div>
 </section>
 
 <section id="login" class="hidden">
-<div class="card"><h2>Client Login</h2><p class="muted">Create an account or login to continue.</p>
-<label>Email</label><input type="email" placeholder="you@example.com">
-<label>Password</label><input type="password" placeholder="••••••••">
-<button onclick="show('account')">Login</button> <button onclick="show('signup')" style="background:#202633">Create account</button></div>
+<div class="card"><h2>Client Login</h2><p class="muted">Enter your email and password to continue.</p>
+<label>Email</label><input type="email" id="login-email" placeholder="you@example.com">
+<label>Password</label><input type="password" id="login-password" placeholder="••••••••">
+<button onclick="handleLogin()">Login</button> <button onclick="show('signup')" style="background:#202633">Create account</button></div>
 </section>
 
 <section id="signup" class="hidden">
 <div class="card"><h2>Create Client Account</h2>
-<input placeholder="Full name"><input type="email" placeholder="Email"><input placeholder="Phone number"><input type="password" placeholder="Create password">
-<button onclick="show('account')">Create Account</button></div>
+<label>Full Name</label><input id="signup-name" placeholder="Full name">
+<label>Email</label><input type="email" id="signup-email" placeholder="Email">
+<label>Phone Number</label><input id="signup-phone" placeholder="Phone number">
+<label>Password</label><input type="password" id="signup-password" placeholder="Create password">
+<button onclick="handleSignup()">Create Account</button>
+<button onclick="show('login')" style="background:#202633; margin-top:10px;">Already have an account? Login</button></div>
 </section>
 
 <section id="account" class="hidden">
-<div class="hero"><div class="muted">WELCOME BACK</div><h1>My Account</h1><p class="muted">Client dashboard</p></div>
-<div class="grid"><div class="card"><div class="muted">Total Orders</div><div class="stat">0</div></div><div class="card"><div class="muted">Pending Payment</div><div class="stat">₹0</div></div></div>
-<div class="card"><h3>Profile</h3><p>Name: Your Name</p><p>Email: your@email.com</p><p>Account status: <span class="status">Active</span></p></div>
-<div class="card"><h3>Payment Slip</h3><p class="muted">Upload your payment proof after payment.</p><input type="file" accept="image/*,.pdf"><button>Upload Slip</button></div>
+<div class="hero"><div class="muted">WELCOME BACK</div><h1 id="user-display-name">My Account</h1><p class="muted">Client dashboard</p></div>
+<div class="grid"><div class="card"><div class="muted">Total Orders</div><div class="stat" id="user-orders-count">0</div></div><div class="card"><div class="muted">Account Status</div><div class="stat" style="font-size:20px; color:#7ee29a;" id="user-status-text">Active</div></div></div>
+<div class="card"><h3>Profile Details</h3><p><b>Name:</b> <span id="profile-name">Loading...</span></p><p><b>Email:</b> <span id="profile-email">Loading...</span></p><p><b>Phone:</b> <span id="profile-phone">Loading...</span></p>
+<button onclick="handleLogout()" style="background:#421a1a; margin-top:10px;">Logout</button>
+</div>
 </section>
 
 <section id="orders" class="hidden"><h2>My Orders</h2><div class="card"><div class="row"><div><b>No orders yet</b><p class="muted">Login and place your first order.</p></div><span class="status">Ready</span></div></div></section>
@@ -63,12 +71,132 @@ footer{text-align:center;color:#777;padding:30px}
 </section>
 </main>
 <footer>© Ganesha Arts • Secure Client Portal</footer>
+
+<!-- 1. Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 2. Supabase Configuration Script -->
+<script src="supabase-config.js"></script>
+
 <script>
+let currentUser = null;
+
 function show(id){
  document.querySelectorAll('main section').forEach(x=>x.classList.add('hidden'));
  document.getElementById(id).classList.remove('hidden');
  window.scrollTo(0,0);
 }
+
+// Navigation Check
+async function checkAuthAndNav() {
+  if(currentUser) {
+    show('account');
+  } else {
+    show('login');
+  }
+}
+
+// Check Current Logged-in Session
+async function initSession() {
+  if(!window.supabaseClient) return;
+  const { data: { session } } = await window.supabaseClient.auth.getSession();
+  if (session && session.user) {
+    currentUser = session.user;
+    loadUserProfile();
+  }
+}
+
+// Fetch Profile Details from DB
+async function loadUserProfile() {
+  if(!currentUser) return;
+  
+  document.getElementById('profile-email').textContent = currentUser.email;
+  
+  const { data, error } = await window.supabaseClient
+    .from('profiles')
+    .select('*')
+    .eq('id', currentUser.id)
+    .single();
+    
+  if (data) {
+    document.getElementById('profile-name').textContent = data.full_name || 'N/A';
+    document.getElementById('profile-phone').textContent = data.phone || 'N/A';
+    document.getElementById('user-display-name').textContent = data.full_name || 'My Account';
+    document.getElementById('user-status-text').textContent = data.account_status || 'Active';
+  }
+}
+
+// Handle Real Signup
+async function handleSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const password = document.getElementById('signup-password').value;
+
+  if(!email || !password || !name) {
+    alert("Please fill in Name, Email and Password!");
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.signUp({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert("Signup Error: " + error.message);
+    return;
+  }
+
+  if (data.user) {
+    // Insert Record in profiles Table
+    const { error: profileError } = await window.supabaseClient
+      .from('profiles')
+      .insert([{ id: data.user.id, full_name: name, phone: phone, account_status: 'active' }]);
+
+    if(profileError) {
+      console.log("Profile DB error:", profileError);
+    }
+
+    alert("Account created successfully! Please check your email for confirmation if required, or Login now.");
+    show('login');
+  }
+}
+
+// Handle Real Login
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  if(!email || !password) {
+    alert("Please enter Email and Password!");
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert("Login Failed: " + error.message);
+    return;
+  }
+
+  currentUser = data.user;
+  await loadUserProfile();
+  alert("Login Successful!");
+  show('account');
+}
+
+// Handle Logout
+async function handleLogout() {
+  await window.supabaseClient.auth.signOut();
+  currentUser = null;
+  alert("Logged out successfully!");
+  show('home');
+}
+
+window.onload = initSession;
 </script>
 </body>
 </html>

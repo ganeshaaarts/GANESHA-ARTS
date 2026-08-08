@@ -9,203 +9,184 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0a0a0f;
-    --bg-elev: #12121a;
-    --bg-card: #171722;
-    --border: #26263a;
-    --border-strong: #363654;
-    --text: #ececf1;
-    --text-dim: #a1a1b3;
-    --text-muted: #6b6b80;
-    --accent: #d4a24c;
-    --accent-2: #b8862f;
-    --accent-glow: rgba(212, 162, 76, 0.35);
-    --danger: #ef4444;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --info: #3b82f6;
-    --radius: 14px;
-    --radius-sm: 10px;
-    --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+    --bg:#0a0a0f; --bg-elev:#12121a; --bg-card:#171722;
+    --border:#26263a; --border-strong:#363654;
+    --text:#ececf1; --text-dim:#a1a1b3; --text-muted:#6b6b80;
+    --accent:#d4a24c; --accent-2:#b8862f;
+    --accent-glow:rgba(212,162,76,0.35);
+    --danger:#ef4444; --success:#10b981; --warning:#f59e0b; --info:#3b82f6;
+    --radius:14px; --radius-sm:10px;
+    --shadow-lg:0 20px 60px rgba(0,0,0,0.5);
   }
-  *{ box-sizing: border-box; margin: 0; padding: 0; }
-  html, body{
-    background: var(--bg); color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    min-height: 100vh; -webkit-font-smoothing: antialiased; line-height: 1.55;
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html, body{ background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  body{ background:radial-gradient(1200px 600px at 80% -10%, rgba(212,162,76,0.08), transparent 60%), radial-gradient(900px 500px at -10% 30%, rgba(184,134,47,0.06), transparent 60%), var(--bg); }
+
+  .nav{ position:sticky; top:0; z-index:50; backdrop-filter:blur(14px); background:rgba(10,10,15,0.72); border-bottom:1px solid var(--border); }
+  .nav-inner{ max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:16px 24px; }
+  .brand{ display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .brand-mark{ width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:grid; place-items:center; font-family:'Playfair Display',serif; color:#1a1a24; font-weight:700; font-size:20px; box-shadow:0 6px 20px var(--accent-glow); }
+  .brand-name{ font-family:'Playfair Display',serif; font-size:20px; font-weight:700; letter-spacing:0.3px; }
+  .brand-sub{ font-size:11px; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; }
+  .nav-links{ display:flex; gap:6px; align-items:center; }
+  .nav-btn{ background:transparent; border:none; color:var(--text-dim); padding:8px 14px; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; transition:all .18s ease; font-family:inherit; }
+  .nav-btn:hover{ color:var(--text); background:var(--bg-elev); }
+  .nav-btn.primary{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#1a1a24; font-weight:600; }
+  .nav-btn.primary:hover{ transform:translateY(-1px); box-shadow:0 8px 20px var(--accent-glow); }
+  .nav-btn.ghost-border{ border:1px solid var(--border-strong); color:var(--text); }
+
+  .container{ max-width:1200px; margin:0 auto; padding:48px 24px; }
+  .hidden{ display:none !important; }
+
+  .hero{ padding:80px 24px 60px; text-align:center; max-width:900px; margin:0 auto; }
+  .hero .eyebrow{ display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(212,162,76,0.1); border:1px solid rgba(212,162,76,0.3); color:var(--accent); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:600; margin-bottom:24px; }
+  .hero h1{ font-family:'Playfair Display',serif; font-size:clamp(38px,6vw,64px); font-weight:700; line-height:1.1; margin-bottom:20px; background:linear-gradient(180deg,#fff 0%,#b8b8cc 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero h1 .accent{ background:linear-gradient(135deg,var(--accent),#f0c56b); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p{ font-size:18px; color:var(--text-dim); max-width:640px; margin:0 auto 36px; }
+  .hero-cta{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  .btn{ padding:13px 26px; border-radius:10px; border:none; font-size:15px; font-weight:600; cursor:pointer; transition:all .2s ease; font-family:inherit; display:inline-flex; align-items:center; gap:8px; }
+  .btn-primary{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#1a1a24; box-shadow:0 8px 24px var(--accent-glow); }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 30px var(--accent-glow); }
+  .btn-primary:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+  .btn-ghost{ background:var(--bg-elev); color:var(--text); border:1px solid var(--border-strong); }
+  .btn-ghost:hover{ background:var(--bg-card); border-color:var(--accent); }
+  .btn-block{ width:100%; justify-content:center; }
+  .btn-sm{ padding:8px 14px; font-size:13px; border-radius:8px; }
+  .btn-danger-ghost{ background:transparent; color:var(--danger); border:1px solid rgba(239,68,68,0.3); }
+  .btn-danger-ghost:hover{ background:rgba(239,68,68,0.08); }
+
+  .features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin-top:40px; }
+  .feature{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:28px 24px; transition:all .25s ease; cursor:pointer; }
+  .feature:hover{ border-color:var(--accent); transform:translateY(-3px); }
+  .feature-icon{ width:46px; height:46px; border-radius:12px; background:rgba(212,162,76,0.12); display:grid; place-items:center; font-size:22px; margin-bottom:16px; }
+  .feature h3{ font-size:17px; margin-bottom:8px; font-weight:600; }
+  .feature p{ font-size:14px; color:var(--text-dim); }
+
+  .auth-wrap{ max-width:460px; margin:0 auto; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:40px 36px; box-shadow:var(--shadow-lg); }
+  .auth-wrap h2{ font-family:'Playfair Display',serif; font-size:28px; margin-bottom:6px; }
+  .auth-wrap .sub{ color:var(--text-dim); font-size:14px; margin-bottom:28px; }
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:13px; color:var(--text-dim); margin-bottom:8px; font-weight:500; }
+  .field input, .field textarea, .field select{ width:100%; padding:12px 14px; background:var(--bg-elev); border:1px solid var(--border-strong); color:var(--text); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; transition:all .18s ease; resize:vertical; }
+  .field textarea{ min-height:96px; }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(212,162,76,0.15); }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:520px){ .field-row{ grid-template-columns:1fr; } }
+  .field-hint{ font-size:12px; color:var(--text-muted); margin-top:6px; }
+
+  /* File input styling */
+  .file-input-wrap{
+    position:relative; display:flex; align-items:center; gap:10px;
+    padding:14px; background:var(--bg-elev);
+    border:1px dashed var(--border-strong); border-radius:var(--radius-sm);
+    cursor:pointer; transition:all .18s ease;
   }
-  body{
-    background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(212,162,76,0.08), transparent 60%),
-      radial-gradient(900px 500px at -10% 30%, rgba(184,134,47,0.06), transparent 60%),
-      var(--bg);
-    min-height: 100vh;
+  .file-input-wrap:hover{ border-color:var(--accent); background:rgba(212,162,76,0.04); }
+  .file-input-wrap input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+    padding:0; border:none; background:transparent;
+  }
+  .file-input-wrap .ic{
+    width:38px; height:38px; border-radius:8px;
+    background:rgba(212,162,76,0.12); display:grid; place-items:center;
+    font-size:18px; flex-shrink:0;
+  }
+  .file-input-wrap .t{ font-size:14px; font-weight:500; color:var(--text); }
+  .file-input-wrap .d{ font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  .image-preview{
+    margin-top:12px; position:relative;
+    border-radius:var(--radius-sm); overflow:hidden;
+    background:var(--bg-elev); border:1px solid var(--border);
+    max-width:280px;
+  }
+  .image-preview img{ width:100%; height:auto; display:block; max-height:220px; object-fit:contain; }
+  .image-preview .meta{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 12px; font-size:12px; color:var(--text-dim);
+    background:rgba(0,0,0,0.25);
+  }
+  .image-preview .remove{
+    background:transparent; border:none; color:var(--danger);
+    cursor:pointer; font-size:12px; font-weight:600;
   }
 
-  .nav{ position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px); background: rgba(10,10,15,0.72); border-bottom: 1px solid var(--border); }
-  .nav-inner{ max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; }
-  .brand{ display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .brand-mark{ width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; font-family: 'Playfair Display', serif; color: #1a1a24; font-weight: 700; font-size: 20px; box-shadow: 0 6px 20px var(--accent-glow); }
-  .brand-name{ font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
-  .brand-sub{ font-size: 11px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
-  .nav-links{ display: flex; gap: 6px; align-items: center; }
-  .nav-btn{ background: transparent; border: none; color: var(--text-dim); padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .18s ease; font-family: inherit; }
-  .nav-btn:hover{ color: var(--text); background: var(--bg-elev); }
-  .nav-btn.primary{ background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #1a1a24; font-weight: 600; }
-  .nav-btn.primary:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px var(--accent-glow); }
-  .nav-btn.ghost-border{ border: 1px solid var(--border-strong); color: var(--text); }
+  .auth-switch{ text-align:center; margin-top:20px; font-size:14px; color:var(--text-dim); }
+  .auth-switch a{ color:var(--accent); text-decoration:none; font-weight:500; cursor:pointer; }
+  .auth-switch a:hover{ text-decoration:underline; }
 
-  .container{ max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
-  .hidden{ display: none !important; }
+  .dash-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; flex-wrap:wrap; gap:16px; }
+  .dash-header h1{ font-family:'Playfair Display',serif; font-size:34px; }
+  .dash-header .welcome{ color:var(--text-dim); font-size:14px; margin-top:4px; }
 
-  .hero{ padding: 80px 24px 60px; text-align: center; max-width: 900px; margin: 0 auto; }
-  .hero .eyebrow{ display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(212,162,76,0.1); border: 1px solid rgba(212,162,76,0.3); color: var(--accent); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 24px; }
-  .hero h1{ font-family: 'Playfair Display', serif; font-size: clamp(38px, 6vw, 64px); font-weight: 700; line-height: 1.1; margin-bottom: 20px; background: linear-gradient(180deg, #fff 0%, #b8b8cc 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero h1 .accent{ background: linear-gradient(135deg, var(--accent), #f0c56b); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero p{ font-size: 18px; color: var(--text-dim); max-width: 640px; margin: 0 auto 36px; }
-  .hero-cta{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .dash-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-bottom:32px; }
+  .stat-card{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
+  .stat-card .label{ font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; }
+  .stat-card .value{ font-size:30px; font-weight:700; margin-top:6px; font-family:'Playfair Display',serif; }
+  .stat-card .hint{ font-size:12px; color:var(--accent); margin-top:6px; }
 
-  .btn{ padding: 13px 26px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s ease; font-family: inherit; display: inline-flex; align-items: center; gap: 8px; }
-  .btn-primary{ background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #1a1a24; box-shadow: 0 8px 24px var(--accent-glow); }
-  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px var(--accent-glow); }
-  .btn-primary:disabled{ opacity: .6; cursor: not-allowed; transform: none; }
-  .btn-ghost{ background: var(--bg-elev); color: var(--text); border: 1px solid var(--border-strong); }
-  .btn-ghost:hover{ background: var(--bg-card); border-color: var(--accent); }
-  .btn-block{ width: 100%; justify-content: center; }
-  .btn-sm{ padding: 8px 14px; font-size: 13px; border-radius: 8px; }
+  .quick-actions{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+  .action-card{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; text-align:left; cursor:pointer; transition:all .2s ease; display:flex; align-items:center; gap:14px; color:var(--text); font-family:inherit; }
+  .action-card:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .action-card .ic{ width:42px; height:42px; border-radius:10px; background:rgba(212,162,76,0.12); display:grid; place-items:center; font-size:20px; flex-shrink:0; }
+  .action-card .t{ font-size:15px; font-weight:600; }
+  .action-card .d{ font-size:12px; color:var(--text-dim); margin-top:2px; }
 
-  .features{ display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 40px; }
-  .feature{ background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; transition: all .25s ease; cursor: pointer; }
-  .feature:hover{ border-color: var(--accent); transform: translateY(-3px); }
-  .feature-icon{ width: 46px; height: 46px; border-radius: 12px; background: rgba(212,162,76,0.12); display: grid; place-items: center; font-size: 22px; margin-bottom: 16px; }
-  .feature h3{ font-size: 17px; margin-bottom: 8px; font-weight: 600; }
-  .feature p{ font-size: 14px; color: var(--text-dim); }
+  .section-title{ font-family:'Playfair Display',serif; font-size:22px; margin:32px 0 16px; }
 
-  .auth-wrap{ max-width: 460px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 36px; box-shadow: var(--shadow-lg); }
-  .auth-wrap h2{ font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 6px; }
-  .auth-wrap .sub{ color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
-  .field{ margin-bottom: 18px; }
-  .field label{ display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; }
-  .field input, .field textarea, .field select{
-    width: 100%; padding: 12px 14px;
-    background: var(--bg-elev); border: 1px solid var(--border-strong);
-    color: var(--text); border-radius: var(--radius-sm);
-    font-size: 15px; font-family: inherit;
-    transition: all .18s ease; resize: vertical;
-  }
-  .field textarea{ min-height: 96px; }
-  .field input:focus, .field textarea:focus, .field select:focus{ outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,162,76,0.15); }
-  .field-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 520px){ .field-row{ grid-template-columns: 1fr; } }
+  .empty-state{ background:var(--bg-card); border:1px dashed var(--border-strong); border-radius:var(--radius); padding:48px 24px; text-align:center; }
+  .empty-state .ic{ font-size:42px; margin-bottom:12px; }
+  .empty-state h3{ font-family:'Playfair Display',serif; font-size:20px; margin-bottom:6px; }
+  .empty-state p{ color:var(--text-dim); font-size:14px; margin-bottom:18px; }
 
-  .auth-switch{ text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-dim); }
-  .auth-switch a{ color: var(--accent); text-decoration: none; font-weight: 500; cursor: pointer; }
-  .auth-switch a:hover{ text-decoration: underline; }
+  .order-list{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
+  .order-card{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; transition:all .2s ease; }
+  .order-card:hover{ border-color:var(--accent); }
+  .order-card .top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:10px; }
+  .order-card h4{ font-family:'Playfair Display',serif; font-size:18px; }
+  .order-card .oid{ font-size:11px; color:var(--text-muted); font-family:monospace; margin-top:2px; }
+  .order-card .thumb{ width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-bottom:12px; background:var(--bg-elev); }
+  .badge{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+  .badge-pending{ background:rgba(245,158,11,0.15); color:var(--warning); border:1px solid rgba(245,158,11,0.3); }
+  .badge-inprogress{ background:rgba(59,130,246,0.15); color:var(--info); border:1px solid rgba(59,130,246,0.3); }
+  .badge-completed{ background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.3); }
+  .badge-open{ background:rgba(245,158,11,0.15); color:var(--warning); border:1px solid rgba(245,158,11,0.3); }
+  .badge-resolved{ background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.3); }
+  .order-card .row{ font-size:13px; color:var(--text-dim); margin:4px 0; }
+  .order-card .row b{ color:var(--text); font-weight:500; }
+  .order-card .notes{ background:var(--bg-elev); border-radius:8px; padding:10px 12px; font-size:13px; color:var(--text-dim); margin-top:10px; border-left:3px solid var(--accent); }
+  .order-card .foot{ margin-top:12px; font-size:11px; color:var(--text-muted); }
 
-  .dash-header{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
-  .dash-header h1{ font-family: 'Playfair Display', serif; font-size: 34px; }
-  .dash-header .welcome{ color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+  .ticket-card{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:12px; }
+  .ticket-card .top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; }
+  .ticket-card h4{ font-size:15px; font-weight:600; }
+  .ticket-card .msg{ color:var(--text-dim); font-size:14px; }
+  .ticket-card .foot{ margin-top:10px; font-size:11px; color:var(--text-muted); }
 
-  .dash-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 32px; }
-  .stat-card{ background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
-  .stat-card .label{ font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-  .stat-card .value{ font-size: 30px; font-weight: 700; margin-top: 6px; font-family: 'Playfair Display', serif; }
-  .stat-card .hint{ font-size: 12px; color: var(--accent); margin-top: 6px; }
+  .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(26,26,36,0.3); border-top-color:#1a1a24; animation:spin 0.7s linear infinite; display:inline-block; vertical-align:middle; }
+  .spinner-lg{ width:28px; height:28px; border-width:3px; border-color:rgba(212,162,76,0.15); border-top-color:var(--accent); }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .loading-block{ text-align:center; padding:40px; color:var(--text-dim); }
 
-  .quick-actions{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-  .action-card{ background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; text-align: left; cursor: pointer; transition: all .2s ease; display: flex; align-items: center; gap: 14px; color: var(--text); font-family: inherit; }
-  .action-card:hover{ border-color: var(--accent); transform: translateY(-2px); }
-  .action-card .ic{ width: 42px; height: 42px; border-radius: 10px; background: rgba(212,162,76,0.12); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
-  .action-card .t{ font-size: 15px; font-weight: 600; }
-  .action-card .d{ font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .footer{ border-top:1px solid var(--border); margin-top:60px; padding:28px 24px; text-align:center; color:var(--text-muted); font-size:13px; }
 
-  .section-title{ font-family: 'Playfair Display', serif; font-size: 22px; margin: 32px 0 16px; }
+  .modal-backdrop{ position:fixed; inset:0; z-index:100; background:rgba(4,4,10,0.75); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; overflow-y:auto; animation:fadeIn .18s ease-out; }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  .modal{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); width:100%; max-width:580px; box-shadow:var(--shadow-lg); animation:slideUp .22s ease-out; }
+  @keyframes slideUp{ from{ transform:translateY(16px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+  .modal-head{ display:flex; justify-content:space-between; align-items:flex-start; padding:24px 28px 12px; }
+  .modal-head h2{ font-family:'Playfair Display',serif; font-size:24px; margin-bottom:4px; }
+  .modal-head p{ color:var(--text-dim); font-size:13px; }
+  .modal-close{ background:transparent; border:none; color:var(--text-dim); width:34px; height:34px; border-radius:8px; font-size:22px; cursor:pointer; line-height:1; transition:all .15s ease; }
+  .modal-close:hover{ background:var(--bg-elev); color:var(--text); }
+  .modal-body{ padding:12px 28px 28px; }
 
-  .empty-state{ background: var(--bg-card); border: 1px dashed var(--border-strong); border-radius: var(--radius); padding: 48px 24px; text-align: center; }
-  .empty-state .ic{ font-size: 42px; margin-bottom: 12px; }
-  .empty-state h3{ font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 6px; }
-  .empty-state p{ color: var(--text-dim); font-size: 14px; margin-bottom: 18px; }
-
-  /* Order cards */
-  .order-list{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
-  .order-card{
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
-    transition: all .2s ease;
-  }
-  .order-card:hover{ border-color: var(--accent); }
-  .order-card .top{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
-  .order-card h4{ font-family: 'Playfair Display', serif; font-size: 18px; }
-  .order-card .oid{ font-size: 11px; color: var(--text-muted); font-family: monospace; margin-top: 2px; }
-  .badge{ display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .badge-pending{ background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
-  .badge-inprogress{ background: rgba(59,130,246,0.15); color: var(--info); border: 1px solid rgba(59,130,246,0.3); }
-  .badge-completed{ background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
-  .badge-open{ background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
-  .badge-resolved{ background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
-  .order-card .row{ font-size: 13px; color: var(--text-dim); margin: 4px 0; }
-  .order-card .row b{ color: var(--text); font-weight: 500; }
-  .order-card .notes{
-    background: var(--bg-elev); border-radius: 8px;
-    padding: 10px 12px; font-size: 13px;
-    color: var(--text-dim); margin-top: 10px;
-    border-left: 3px solid var(--accent);
-  }
-  .order-card .foot{ margin-top: 12px; font-size: 11px; color: var(--text-muted); }
-
-  /* Ticket cards */
-  .ticket-card{
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px; margin-bottom: 12px;
-  }
-  .ticket-card .top{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 10px; }
-  .ticket-card h4{ font-size: 15px; font-weight: 600; }
-  .ticket-card .msg{ color: var(--text-dim); font-size: 14px; }
-  .ticket-card .foot{ margin-top: 10px; font-size: 11px; color: var(--text-muted); }
-
-  .spinner{ width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(26,26,36,0.3); border-top-color: #1a1a24; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; }
-  .spinner-lg{ width: 28px; height: 28px; border-width: 3px; border-color: rgba(212,162,76,0.15); border-top-color: var(--accent); }
-  @keyframes spin{ to{ transform: rotate(360deg); } }
-  .loading-block{ text-align: center; padding: 40px; color: var(--text-dim); }
-
-  .footer{ border-top: 1px solid var(--border); margin-top: 60px; padding: 28px 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
-
-  /* MODAL */
-  .modal-backdrop{
-    position: fixed; inset: 0; z-index: 100;
-    background: rgba(4,4,10,0.75); backdrop-filter: blur(6px);
-    display: flex; align-items: flex-start; justify-content: center;
-    padding: 40px 20px; overflow-y: auto;
-    animation: fadeIn .18s ease-out;
-  }
-  @keyframes fadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
-  .modal{
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); width: 100%; max-width: 560px;
-    box-shadow: var(--shadow-lg); animation: slideUp .22s ease-out;
-  }
-  @keyframes slideUp{ from{ transform: translateY(16px); opacity: 0; } to{ transform: translateY(0); opacity: 1; } }
-  .modal-head{
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 24px 28px 12px;
-  }
-  .modal-head h2{ font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 4px; }
-  .modal-head p{ color: var(--text-dim); font-size: 13px; }
-  .modal-close{
-    background: transparent; border: none; color: var(--text-dim);
-    width: 34px; height: 34px; border-radius: 8px;
-    font-size: 22px; cursor: pointer; line-height: 1;
-    transition: all .15s ease;
-  }
-  .modal-close:hover{ background: var(--bg-elev); color: var(--text); }
-  .modal-body{ padding: 12px 28px 28px; }
-
-  @media (max-width: 640px){
-    .nav-links .nav-btn:not(.primary):not(.ghost-border){ display: none; }
-    .hero{ padding: 48px 20px 40px; }
-    .auth-wrap{ padding: 32px 22px; }
-    .modal{ margin: 0; }
-    .modal-head, .modal-body{ padding-left: 20px; padding-right: 20px; }
+  @media (max-width:640px){
+    .nav-links .nav-btn:not(.primary):not(.ghost-border){ display:none; }
+    .hero{ padding:48px 20px 40px; }
+    .auth-wrap{ padding:32px 22px; }
+    .modal-head, .modal-body{ padding-left:20px; padding-right:20px; }
   }
 </style>
 </head>
@@ -268,14 +249,8 @@
     <h2>Welcome back</h2>
     <p class="sub">Sign in to continue your sacred journey.</p>
     <form id="form-login" autocomplete="on" novalidate>
-      <div class="field">
-        <label for="login-email">Email</label>
-        <input type="email" id="login-email" placeholder="you@example.com" required />
-      </div>
-      <div class="field">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" required />
-      </div>
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="you@example.com" required /></div>
+      <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" placeholder="••••••••" required /></div>
       <button type="submit" class="btn btn-primary btn-block" id="btn-login">Sign In</button>
     </form>
     <p class="auth-switch">New to Ganesha Arts? <a data-nav="signup">Create an account</a></p>
@@ -288,22 +263,10 @@
     <h2>Begin your journey</h2>
     <p class="sub">Create an account to order sacred handcrafted art.</p>
     <form id="form-signup" autocomplete="on" novalidate>
-      <div class="field">
-        <label for="signup-name">Full Name</label>
-        <input type="text" id="signup-name" placeholder="Your full name" required />
-      </div>
-      <div class="field">
-        <label for="signup-phone">Phone</label>
-        <input type="tel" id="signup-phone" placeholder="+91 98765 43210" required />
-      </div>
-      <div class="field">
-        <label for="signup-email">Email</label>
-        <input type="email" id="signup-email" placeholder="you@example.com" required />
-      </div>
-      <div class="field">
-        <label for="signup-password">Password</label>
-        <input type="password" id="signup-password" placeholder="Min. 6 characters" minlength="6" required />
-      </div>
+      <div class="field"><label for="signup-name">Full Name</label><input type="text" id="signup-name" placeholder="Your full name" required /></div>
+      <div class="field"><label for="signup-phone">Phone</label><input type="tel" id="signup-phone" placeholder="+91 98765 43210" required /></div>
+      <div class="field"><label for="signup-email">Email</label><input type="email" id="signup-email" placeholder="you@example.com" required /></div>
+      <div class="field"><label for="signup-password">Password</label><input type="password" id="signup-password" placeholder="Min. 6 characters" minlength="6" required /></div>
       <button type="submit" class="btn btn-primary btn-block" id="btn-signup">Create Account</button>
     </form>
     <p class="auth-switch">Already have an account? <a data-nav="login">Sign in</a></p>
@@ -322,39 +285,16 @@
       <button type="button" class="btn btn-ghost" data-action="logout">Logout</button>
     </div>
   </div>
-
   <div class="dash-grid">
-    <div class="stat-card">
-      <div class="label">Active Orders</div>
-      <div class="value" id="stat-active">0</div>
-      <div class="hint">In progress</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Completed</div>
-      <div class="value" id="stat-completed">0</div>
-      <div class="hint">Delivered with love</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Support Tickets</div>
-      <div class="value" id="stat-tickets">0</div>
-      <div class="hint">Open + resolved</div>
-    </div>
+    <div class="stat-card"><div class="label">Active Orders</div><div class="value" id="stat-active">0</div><div class="hint">In progress</div></div>
+    <div class="stat-card"><div class="label">Completed</div><div class="value" id="stat-completed">0</div><div class="hint">Delivered with love</div></div>
+    <div class="stat-card"><div class="label">Support Tickets</div><div class="value" id="stat-tickets">0</div><div class="hint">Open + resolved</div></div>
   </div>
-
   <h2 class="section-title">Quick Actions</h2>
   <div class="quick-actions">
-    <button type="button" class="action-card" data-nav="orders">
-      <div class="ic">📦</div>
-      <div><div class="t">My Orders</div><div class="d">Track & manage</div></div>
-    </button>
-    <button type="button" class="action-card" data-nav="support">
-      <div class="ic">💬</div>
-      <div><div class="t">Support</div><div class="d">Raise a ticket</div></div>
-    </button>
-    <button type="button" class="action-card" data-nav="reviews">
-      <div class="ic">⭐</div>
-      <div><div class="t">Reviews</div><div class="d">Share your experience</div></div>
-    </button>
+    <button type="button" class="action-card" data-nav="orders"><div class="ic">📦</div><div><div class="t">My Orders</div><div class="d">Track & manage</div></div></button>
+    <button type="button" class="action-card" data-nav="support"><div class="ic">💬</div><div><div class="t">Support</div><div class="d">Raise a ticket</div></div></button>
+    <button type="button" class="action-card" data-nav="reviews"><div class="ic">⭐</div><div><div class="t">Reviews</div><div class="d">Share your experience</div></div></button>
   </div>
 </section>
 
@@ -378,30 +318,19 @@
     <div><h1>Support</h1><div class="welcome">We're here to help — day or night.</div></div>
     <button type="button" class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
   </div>
-
-  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;" id="support-grid">
-    <!-- Ticket form -->
-    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding: 26px;">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;" id="support-grid">
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:26px;">
       <h3 style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:6px;">Submit a Support Ticket</h3>
-      <p style="color:var(--text-dim); font-size:13px; margin-bottom: 20px;">Our artisan team responds within 24 hours.</p>
+      <p style="color:var(--text-dim); font-size:13px; margin-bottom:20px;">Our artisan team responds within 24 hours.</p>
       <form id="form-ticket" novalidate>
-        <div class="field">
-          <label for="ticket-subject">Subject</label>
-          <input type="text" id="ticket-subject" placeholder="E.g., Question about my order" required />
-        </div>
-        <div class="field">
-          <label for="ticket-message">Message</label>
-          <textarea id="ticket-message" placeholder="Share your query in detail…" required></textarea>
-        </div>
+        <div class="field"><label for="ticket-subject">Subject</label><input type="text" id="ticket-subject" placeholder="E.g., Question about my order" required /></div>
+        <div class="field"><label for="ticket-message">Message</label><textarea id="ticket-message" placeholder="Share your query in detail…" required></textarea></div>
         <button type="submit" class="btn btn-primary btn-block" id="btn-ticket">Send Ticket</button>
       </form>
     </div>
-    <!-- Tickets list -->
     <div>
       <h3 style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:16px;">Your Tickets</h3>
-      <div id="tickets-container">
-        <div class="loading-block"><span class="spinner spinner-lg"></span></div>
-      </div>
+      <div id="tickets-container"><div class="loading-block"><span class="spinner spinner-lg"></span></div></div>
     </div>
   </div>
 </section>
@@ -413,9 +342,7 @@
     <button type="button" class="btn btn-ghost" data-nav="dashboard">← Dashboard</button>
   </div>
   <div class="empty-state">
-    <div class="ic">⭐</div>
-    <h3>No reviews yet</h3>
-    <p>Complete an order to leave your first review.</p>
+    <div class="ic">⭐</div><h3>No reviews yet</h3><p>Complete an order to leave your first review.</p>
   </div>
 </section>
 
@@ -455,25 +382,43 @@
             </select>
           </div>
         </div>
+
         <div class="field">
           <label for="order-requirements">Special Requirements</label>
           <textarea id="order-requirements" placeholder="Colors, materials, deadlines, symbolism…"></textarea>
         </div>
+
         <div class="field">
-          <label for="order-reference">Reference Image URL <span style="color:var(--text-muted); font-weight:400">(or a text description)</span></label>
+          <label for="order-reference">Reference Image URL <span style="color:var(--text-muted); font-weight:400">(optional)</span></label>
           <input type="text" id="order-reference" placeholder="https://… or brief description" />
         </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="order-contact-name">Contact Name</label>
-            <input type="text" id="order-contact-name" placeholder="Full name" required />
+
+        <div class="field">
+          <label>Upload Reference Photo from Your Device <span style="color:var(--text-muted); font-weight:400">(optional)</span></label>
+          <label class="file-input-wrap" for="order-image-file">
+            <div class="ic">🖼️</div>
+            <div>
+              <div class="t" id="file-label-text">Choose a photo from your gallery</div>
+              <div class="d">JPG / PNG / WEBP · auto-compressed before upload</div>
+            </div>
+            <input type="file" id="order-image-file" accept="image/*" />
+          </label>
+          <div id="image-preview" class="image-preview hidden">
+            <img id="image-preview-img" alt="Reference preview" />
+            <div class="meta">
+              <span id="image-preview-info">—</span>
+              <button type="button" class="remove" data-action="clear-image">Remove</button>
+            </div>
           </div>
-          <div class="field">
-            <label for="order-contact-phone">Contact Phone</label>
-            <input type="tel" id="order-contact-phone" placeholder="+91 98765 43210" required />
-          </div>
+          <div class="field-hint" id="image-status"></div>
         </div>
-        <div style="display:flex; gap:10px; margin-top: 8px;">
+
+        <div class="field-row">
+          <div class="field"><label for="order-contact-name">Contact Name</label><input type="text" id="order-contact-name" placeholder="Full name" required /></div>
+          <div class="field"><label for="order-contact-phone">Contact Phone</label><input type="tel" id="order-contact-phone" placeholder="+91 98765 43210" required /></div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
           <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
           <button type="submit" class="btn btn-primary" id="btn-order" style="flex:1; justify-content:center;">Submit Order</button>
         </div>
@@ -486,44 +431,39 @@
   ॥ Ganesha Arts ॥ &nbsp;•&nbsp; Crafted with devotion &nbsp;•&nbsp; © <span id="year"></span>
 </footer>
 
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Supabase config (must define window.supabaseClient) -->
 <script src="supabase-config.js"></script>
 
 <script>
 (function () {
   'use strict';
 
-  var SECTIONS = ['home', 'login', 'signup', 'dashboard', 'orders', 'support', 'reviews'];
+  var SECTIONS = ['home','login','signup','dashboard','orders','support','reviews'];
   var currentUser = null;
+  var pendingImageBase64 = ''; // holds compressed base64 of chosen image
 
-  function $(id) { return document.getElementById(id); }
-  function esc(s) {
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
     if (s === null || s === undefined) return '';
-    return String(s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
   }
-  function fmtDate(iso) {
-    if (!iso) return '';
-    try {
-      var d = new Date(iso);
-      return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    } catch (e) { return String(iso); }
+  function fmtDate(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }catch(e){ return String(iso); } }
+  function fmtSize(bytes){
+    if (!bytes && bytes !== 0) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1024/1024).toFixed(2) + ' MB';
   }
 
-  // ---------- NAVIGATION ----------
-  function navigate(target) {
+  // ---------- NAV ----------
+  function navigate(target){
     if (SECTIONS.indexOf(target) === -1) target = 'home';
-    for (var i = 0; i < SECTIONS.length; i++) {
-      var el = document.getElementById('section-' + SECTIONS[i]);
+    for (var i=0;i<SECTIONS.length;i++){
+      var el = document.getElementById('section-'+SECTIONS[i]);
       if (!el) continue;
-      if (SECTIONS[i] === target) el.classList.remove('hidden');
-      else el.classList.add('hidden');
+      el.classList.toggle('hidden', SECTIONS[i] !== target);
     }
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
-
+    try{ window.scrollTo({top:0, behavior:'smooth'}); } catch(e){ window.scrollTo(0,0); }
     if (target === 'orders' && currentUser) loadOrders();
     if (target === 'support' && currentUser) loadTickets();
     if (target === 'dashboard' && currentUser) loadStats();
@@ -531,47 +471,40 @@
   window.__nav = navigate;
 
   // ---------- MODAL ----------
-  function openModal(id) {
-    var m = document.getElementById('modal-' + id);
-    if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+  function openModal(id){
+    var m = document.getElementById('modal-'+id);
+    if (m){ m.classList.remove('hidden'); document.body.style.overflow='hidden'; }
   }
-  function closeAllModals() {
+  function closeAllModals(){
     var mods = document.querySelectorAll('.modal-backdrop');
-    for (var i = 0; i < mods.length; i++) mods[i].classList.add('hidden');
-    document.body.style.overflow = '';
+    for (var i=0;i<mods.length;i++) mods[i].classList.add('hidden');
+    document.body.style.overflow='';
   }
 
   // ---------- SUPABASE ----------
-  function getClient() { return (typeof window !== 'undefined') ? window.supabaseClient : null; }
-  function requireClient() {
-    var c = getClient();
-    if (!c) { alert('Supabase is not configured. Ensure supabase-config.js loads and defines window.supabaseClient.'); return null; }
-    return c;
-  }
+  function getClient(){ return (typeof window !== 'undefined') ? window.supabaseClient : null; }
+  function requireClient(){ var c = getClient(); if (!c){ alert('Supabase is not configured. Ensure supabase-config.js loads and defines window.supabaseClient.'); return null; } return c; }
 
   // ---------- AUTH UI ----------
-  function setAuthedUI(user) {
+  function setAuthedUI(user){
     currentUser = user || null;
     var authed = !!user;
     if ($('nav-login'))    $('nav-login').classList.toggle('hidden', authed);
     if ($('nav-signup'))   $('nav-signup').classList.toggle('hidden', authed);
     if ($('nav-dashboard'))$('nav-dashboard').classList.toggle('hidden', !authed);
     if ($('nav-logout'))   $('nav-logout').classList.toggle('hidden', !authed);
-
-    if (authed) {
+    if (authed){
       var meta = user.user_metadata || {};
       if ($('dash-username')) $('dash-username').textContent = meta.full_name || (user.email ? user.email.split('@')[0] : 'Devotee');
       if ($('dash-email'))    $('dash-email').textContent = user.email || '';
-      // Prefill order contact fields when available
-      if ($('order-contact-name')) $('order-contact-name').value = $('order-contact-name').value || meta.full_name || '';
+      if ($('order-contact-name'))  $('order-contact-name').value  = $('order-contact-name').value  || meta.full_name || '';
       if ($('order-contact-phone')) $('order-contact-phone').value = $('order-contact-phone').value || meta.phone || '';
     }
   }
-
-  function setLoading(btn, isLoading, idleLabel) {
+  function setLoading(btn, isLoading, idleLabel){
     if (!btn) return;
     btn.disabled = !!isLoading;
-    if (isLoading) {
+    if (isLoading){
       if (!btn.dataset._label) btn.dataset._label = btn.innerHTML;
       btn.innerHTML = '<span class="spinner"></span>&nbsp; Please wait…';
     } else {
@@ -580,340 +513,334 @@
     }
   }
 
+  // ---------- IMAGE COMPRESSION ----------
+  // Compress an image File to a base64 JPEG string (max ~1200px, quality 0.75)
+  function compressImageFile(file, maxDim, quality){
+    maxDim = maxDim || 1200;
+    quality = quality || 0.75;
+    return new Promise(function(resolve, reject){
+      if (!file){ reject(new Error('No file provided')); return; }
+      if (!file.type || file.type.indexOf('image/') !== 0){ reject(new Error('Not an image file')); return; }
+      var reader = new FileReader();
+      reader.onerror = function(){ reject(new Error('Could not read file')); };
+      reader.onload = function(){
+        var img = new Image();
+        img.onerror = function(){ reject(new Error('Invalid image')); };
+        img.onload = function(){
+          var w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim){
+            if (w >= h){ h = Math.round(h * (maxDim / w)); w = maxDim; }
+            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+          }
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          try{
+            var out = canvas.toDataURL('image/jpeg', quality);
+            resolve({ dataUrl: out, width: w, height: h, approxBytes: Math.round((out.length - 'data:image/jpeg;base64,'.length) * 3 / 4) });
+          } catch(e){ reject(e); }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function onImageFileSelected(e){
+    var file = e.target.files && e.target.files[0];
+    var status = $('image-status');
+    var preview = $('image-preview');
+    var previewImg = $('image-preview-img');
+    var info = $('image-preview-info');
+    var labelText = $('file-label-text');
+
+    if (!file){ clearImageSelection(); return; }
+
+    // Reasonable upper cap on raw file size (15MB); we'll compress it
+    if (file.size > 15 * 1024 * 1024){
+      alert('Please choose an image smaller than 15 MB.');
+      e.target.value = '';
+      clearImageSelection();
+      return;
+    }
+
+    if (status) status.textContent = 'Compressing image…';
+    try{
+      var res = await compressImageFile(file, 1200, 0.75);
+      pendingImageBase64 = res.dataUrl;
+      previewImg.src = res.dataUrl;
+      info.textContent = file.name + ' · ' + res.width + '×' + res.height + ' · ' + fmtSize(res.approxBytes) + ' (compressed)';
+      preview.classList.remove('hidden');
+      if (labelText) labelText.textContent = 'Change photo';
+      if (status) status.textContent = 'Ready to submit ✦';
+    } catch(err){
+      console.error(err);
+      alert('Could not read image: ' + (err.message || err));
+      clearImageSelection();
+    }
+  }
+
+  function clearImageSelection(){
+    pendingImageBase64 = '';
+    var input = $('order-image-file'); if (input) input.value = '';
+    var preview = $('image-preview'); if (preview) preview.classList.add('hidden');
+    var previewImg = $('image-preview-img'); if (previewImg) previewImg.src = '';
+    var info = $('image-preview-info'); if (info) info.textContent = '—';
+    var labelText = $('file-label-text'); if (labelText) labelText.textContent = 'Choose a photo from your gallery';
+    var status = $('image-status'); if (status) status.textContent = '';
+  }
+
   // ---------- SIGNUP ----------
-  async function handleSignup(e) {
+  async function handleSignup(e){
     if (e && e.preventDefault) e.preventDefault();
     var client = requireClient(); if (!client) return;
     var btn = $('btn-signup');
-    var fullName = ($('signup-name').value || '').trim();
-    var phone    = ($('signup-phone').value || '').trim();
-    var email    = ($('signup-email').value || '').trim();
-    var password = $('signup-password').value || '';
-    if (!fullName || !phone || !email || !password) { alert('Please fill in all fields.'); return; }
-    if (password.length < 6) { alert('Password must be at least 6 characters.'); return; }
-
+    var fullName = ($('signup-name').value||'').trim();
+    var phone    = ($('signup-phone').value||'').trim();
+    var email    = ($('signup-email').value||'').trim();
+    var password = $('signup-password').value||'';
+    if (!fullName || !phone || !email || !password){ alert('Please fill in all fields.'); return; }
+    if (password.length < 6){ alert('Password must be at least 6 characters.'); return; }
     setLoading(btn, true);
-    try {
-      var res = await client.auth.signUp({
-        email: email, password: password,
-        options: { data: { full_name: fullName, phone: phone } }
-      });
-      if (res.error) { alert('Signup failed: ' + res.error.message); return; }
+    try{
+      var res = await client.auth.signUp({ email:email, password:password, options:{ data:{ full_name:fullName, phone:phone } } });
+      if (res.error){ alert('Signup failed: '+res.error.message); return; }
       var user = res.data && res.data.user;
-      if (user) {
-        var up = await client.from('profiles').upsert({
-          id: user.id, full_name: fullName, phone: phone, email: email,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'id' });
-        if (up.error) { console.warn('Profile upsert error:', up.error); alert('Account created, but saving profile had an issue: ' + up.error.message); }
+      if (user){
+        var up = await client.from('profiles').upsert({ id:user.id, full_name:fullName, phone:phone, email:email, updated_at:new Date().toISOString() }, { onConflict:'id' });
+        if (up.error){ console.warn('Profile upsert error:', up.error); alert('Account created, but saving profile had an issue: '+up.error.message); }
         else { alert('✦ Welcome to Ganesha Arts! Your account has been created.'); }
-      } else {
-        alert('✦ Confirmation email sent. Please verify your email to continue.');
-      }
-      var form = $('form-signup'); if (form) form.reset();
+      } else { alert('✦ Confirmation email sent. Please verify your email to continue.'); }
+      $('form-signup').reset();
       var sess = await client.auth.getSession();
-      if (sess && sess.data && sess.data.session && sess.data.session.user) {
-        setAuthedUI(sess.data.session.user); navigate('dashboard');
-      } else { navigate('login'); }
-    } catch (err) { console.error(err); alert('Unexpected error during signup: ' + (err && err.message ? err.message : err)); }
-    finally { setLoading(btn, false, 'Create Account'); }
+      if (sess && sess.data && sess.data.session && sess.data.session.user){ setAuthedUI(sess.data.session.user); navigate('dashboard'); }
+      else { navigate('login'); }
+    } catch(err){ console.error(err); alert('Unexpected error during signup: '+(err && err.message ? err.message : err)); }
+    finally{ setLoading(btn, false, 'Create Account'); }
   }
 
   // ---------- LOGIN ----------
-  async function handleLogin(e) {
+  async function handleLogin(e){
     if (e && e.preventDefault) e.preventDefault();
     var client = requireClient(); if (!client) return;
     var btn = $('btn-login');
-    var email    = ($('login-email').value || '').trim();
-    var password = $('login-password').value || '';
-    if (!email || !password) { alert('Please enter email and password.'); return; }
-
+    var email = ($('login-email').value||'').trim();
+    var password = $('login-password').value||'';
+    if (!email || !password){ alert('Please enter email and password.'); return; }
     setLoading(btn, true);
-    try {
-      var res = await client.auth.signInWithPassword({ email: email, password: password });
-      if (res.error) { alert('Login failed: ' + res.error.message); return; }
+    try{
+      var res = await client.auth.signInWithPassword({ email:email, password:password });
+      if (res.error){ alert('Login failed: '+res.error.message); return; }
       var user = res.data && res.data.user;
-      if (user) {
-        alert('✦ Welcome back!');
-        setAuthedUI(user);
-        var form = $('form-login'); if (form) form.reset();
-        navigate('dashboard');
-      }
-    } catch (err) { console.error(err); alert('Unexpected error during login: ' + (err && err.message ? err.message : err)); }
-    finally { setLoading(btn, false, 'Sign In'); }
+      if (user){ alert('✦ Welcome back!'); setAuthedUI(user); $('form-login').reset(); navigate('dashboard'); }
+    } catch(err){ console.error(err); alert('Unexpected error during login: '+(err && err.message ? err.message : err)); }
+    finally{ setLoading(btn, false, 'Sign In'); }
   }
 
   // ---------- LOGOUT ----------
-  async function handleLogout() {
+  async function handleLogout(){
     var client = requireClient(); if (!client) return;
-    try {
+    try{
       var res = await client.auth.signOut();
-      if (res.error) { alert('Logout failed: ' + res.error.message); return; }
-      setAuthedUI(null);
-      alert('You have been signed out.');
-      navigate('home');
-    } catch (err) { alert('Unexpected error during logout: ' + (err && err.message ? err.message : err)); }
+      if (res.error){ alert('Logout failed: '+res.error.message); return; }
+      setAuthedUI(null); alert('You have been signed out.'); navigate('home');
+    } catch(err){ alert('Unexpected error during logout: '+(err && err.message ? err.message : err)); }
   }
   window.__logout = handleLogout;
 
-  // ---------- REQUIRE LOGIN HELPER ----------
-  function requireLogin(actionLabel) {
+  function requireLogin(actionLabel){
     if (currentUser) return true;
-    alert('Please sign in or create an account to ' + (actionLabel || 'continue') + '.');
-    navigate('login');
-    return false;
+    alert('Please sign in or create an account to '+(actionLabel||'continue')+'.');
+    navigate('login'); return false;
   }
 
   // ---------- ORDERS ----------
-  async function handleOrderSubmit(e) {
+  async function handleOrderSubmit(e){
     if (e && e.preventDefault) e.preventDefault();
-    if (!requireLogin('place an order')) { closeAllModals(); return; }
+    if (!requireLogin('place an order')){ closeAllModals(); return; }
     var client = requireClient(); if (!client) return;
     var btn = $('btn-order');
 
+    var referenceUrl = ($('order-reference').value||'').trim();
     var payload = {
       user_id: currentUser.id,
-      artwork_type: ($('order-type').value || '').trim(),
-      size: ($('order-size').value || '').trim(),
-      special_requirements: ($('order-requirements').value || '').trim(),
-      reference: ($('order-reference').value || '').trim(),
-      contact_name: ($('order-contact-name').value || '').trim(),
-      contact_phone: ($('order-contact-phone').value || '').trim(),
+      artwork_type: ($('order-type').value||'').trim(),
+      size: ($('order-size').value||'').trim(),
+      special_requirements: ($('order-requirements').value||'').trim(),
+      reference: referenceUrl,                                 // URL / text description (existing)
+      reference_image_url: referenceUrl || null,               // duplicated for compatibility
+      image_data: pendingImageBase64 || null,                  // NEW: compressed base64 payload
+      contact_name: ($('order-contact-name').value||'').trim(),
+      contact_phone: ($('order-contact-phone').value||'').trim(),
       status: 'pending',
       created_at: new Date().toISOString()
     };
-    if (!payload.artwork_type || !payload.size || !payload.contact_name || !payload.contact_phone) {
+
+    if (!payload.artwork_type || !payload.size || !payload.contact_name || !payload.contact_phone){
       alert('Please fill in artwork type, size, and contact details.'); return;
     }
 
     setLoading(btn, true);
-    try {
+    try{
       var res = await client.from('orders').insert(payload).select();
-      if (res.error) { alert('Could not place order: ' + res.error.message); return; }
+      if (res.error){
+        // Some Supabase schemas may not have reference_image_url column — retry without it
+        if (/reference_image_url/i.test(res.error.message||'')){
+          delete payload.reference_image_url;
+          res = await client.from('orders').insert(payload).select();
+        }
+      }
+      if (res.error){ alert('Could not place order: '+res.error.message); return; }
       alert('✦ Order placed! Our artisans will reach out shortly.');
       $('form-order').reset();
+      clearImageSelection();
       closeAllModals();
       navigate('orders');
-    } catch (err) { console.error(err); alert('Unexpected error placing order: ' + (err && err.message ? err.message : err)); }
-    finally { setLoading(btn, false, 'Submit Order'); }
+    } catch(err){ console.error(err); alert('Unexpected error placing order: '+(err && err.message ? err.message : err)); }
+    finally{ setLoading(btn, false, 'Submit Order'); }
   }
 
-  async function loadOrders() {
-    var container = $('orders-container');
-    if (!container) return;
+  async function loadOrders(){
+    var container = $('orders-container'); if (!container) return;
     var client = requireClient(); if (!client) return;
     container.innerHTML = '<div class="loading-block"><span class="spinner spinner-lg"></span><div style="margin-top:12px">Loading your orders…</div></div>';
-    try {
-      var res = await client.from('orders')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false });
-      if (res.error) {
-        container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Could not load orders</h3><p>' + esc(res.error.message) + '</p></div>';
-        return;
-      }
+    try{
+      var res = await client.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:false });
+      if (res.error){ container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Could not load orders</h3><p>'+esc(res.error.message)+'</p></div>'; return; }
       var orders = res.data || [];
-      if (!orders.length) {
-        container.innerHTML =
-          '<div class="empty-state">' +
-            '<div class="ic">📦</div>' +
-            '<h3>No orders yet</h3>' +
-            '<p>Place your first custom commission and we\'ll craft it with devotion.</p>' +
-            '<button type="button" class="btn btn-primary" data-action="place-order">+ Place Custom Order</button>' +
-          '</div>';
+      if (!orders.length){
+        container.innerHTML = '<div class="empty-state"><div class="ic">📦</div><h3>No orders yet</h3><p>Place your first custom commission and we\'ll craft it with devotion.</p><button type="button" class="btn btn-primary" data-action="place-order">+ Place Custom Order</button></div>';
         return;
       }
       var html = '<div class="order-list">';
-      for (var i = 0; i < orders.length; i++) {
+      for (var i=0;i<orders.length;i++){
         var o = orders[i];
-        var st = (o.status || 'pending').toLowerCase();
+        var st = (o.status||'pending').toLowerCase();
         var badgeClass = 'badge-pending';
-        if (st === 'in_progress' || st === 'in progress' || st === 'inprogress') badgeClass = 'badge-inprogress';
-        else if (st === 'completed' || st === 'delivered') badgeClass = 'badge-completed';
+        if (st==='in_progress'||st==='in progress'||st==='inprogress') badgeClass='badge-inprogress';
+        else if (st==='completed'||st==='delivered') badgeClass='badge-completed';
+        var img = o.image_data || (o.reference_image_url && /^https?:\/\//i.test(o.reference_image_url) ? o.reference_image_url : '') || (o.reference && /^https?:\/\//i.test(o.reference) ? o.reference : '');
         html +=
           '<div class="order-card">' +
+            (img ? '<img class="thumb" src="'+esc(img)+'" alt="reference" onerror="this.style.display=\'none\'" />' : '') +
             '<div class="top">' +
-              '<div>' +
-                '<h4>' + esc(o.artwork_type || 'Custom Artwork') + '</h4>' +
-                '<div class="oid">#' + esc(String(o.id).substring(0, 8)) + '</div>' +
-              '</div>' +
-              '<span class="badge ' + badgeClass + '">' + esc(o.status || 'pending') + '</span>' +
+              '<div><h4>'+esc(o.artwork_type||'Custom Artwork')+'</h4><div class="oid">#'+esc(String(o.id).substring(0,8))+'</div></div>' +
+              '<span class="badge '+badgeClass+'">'+esc(o.status||'pending')+'</span>' +
             '</div>' +
-            '<div class="row"><b>Size:</b> ' + esc(o.size || '—') + '</div>' +
-            (o.reference ? '<div class="row"><b>Reference:</b> ' + esc(o.reference) + '</div>' : '') +
-            '<div class="row"><b>Contact:</b> ' + esc(o.contact_name || '—') + ' · ' + esc(o.contact_phone || '') + '</div>' +
-            (o.special_requirements ? '<div class="notes">' + esc(o.special_requirements) + '</div>' : '') +
-            '<div class="foot">Placed on ' + esc(fmtDate(o.created_at)) + '</div>' +
+            '<div class="row"><b>Size:</b> '+esc(o.size||'—')+'</div>' +
+            (o.reference && !/^data:/i.test(o.reference) ? '<div class="row"><b>Reference:</b> '+esc(o.reference)+'</div>' : '') +
+            '<div class="row"><b>Contact:</b> '+esc(o.contact_name||'—')+' · '+esc(o.contact_phone||'')+'</div>' +
+            (o.special_requirements ? '<div class="notes">'+esc(o.special_requirements)+'</div>' : '') +
+            '<div class="foot">Placed on '+esc(fmtDate(o.created_at))+'</div>' +
           '</div>';
       }
       html += '</div>';
       container.innerHTML = html;
-    } catch (err) {
-      container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Unexpected error</h3><p>' + esc(err.message || String(err)) + '</p></div>';
+    } catch(err){
+      container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Unexpected error</h3><p>'+esc(err.message||String(err))+'</p></div>';
     }
   }
 
   // ---------- SUPPORT ----------
-  async function handleTicketSubmit(e) {
+  async function handleTicketSubmit(e){
     if (e && e.preventDefault) e.preventDefault();
     if (!requireLogin('submit a support ticket')) return;
     var client = requireClient(); if (!client) return;
-
     var btn = $('btn-ticket');
-    var subject = ($('ticket-subject').value || '').trim();
-    var message = ($('ticket-message').value || '').trim();
-    if (!subject || !message) { alert('Please fill in both subject and message.'); return; }
-
+    var subject = ($('ticket-subject').value||'').trim();
+    var message = ($('ticket-message').value||'').trim();
+    if (!subject || !message){ alert('Please fill in both subject and message.'); return; }
     setLoading(btn, true);
-    try {
-      var res = await client.from('support_tickets').insert({
-        user_id: currentUser.id,
-        subject: subject,
-        message: message,
-        status: 'open',
-        created_at: new Date().toISOString()
-      }).select();
-      if (res.error) { alert('Could not submit ticket: ' + res.error.message); return; }
+    try{
+      var res = await client.from('support_tickets').insert({ user_id:currentUser.id, subject:subject, message:message, status:'open', created_at:new Date().toISOString() }).select();
+      if (res.error){ alert('Could not submit ticket: '+res.error.message); return; }
       alert('✦ Support ticket submitted! We\'ll respond within 24 hours.');
-      $('form-ticket').reset();
-      loadTickets();
-    } catch (err) { console.error(err); alert('Unexpected error: ' + (err && err.message ? err.message : err)); }
-    finally { setLoading(btn, false, 'Send Ticket'); }
+      $('form-ticket').reset(); loadTickets();
+    } catch(err){ console.error(err); alert('Unexpected error: '+(err && err.message ? err.message : err)); }
+    finally{ setLoading(btn, false, 'Send Ticket'); }
   }
 
-  async function loadTickets() {
-    var container = $('tickets-container');
-    if (!container) return;
+  async function loadTickets(){
+    var container = $('tickets-container'); if (!container) return;
     var client = requireClient(); if (!client) return;
     container.innerHTML = '<div class="loading-block"><span class="spinner spinner-lg"></span></div>';
-    try {
-      var res = await client.from('support_tickets')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false });
-      if (res.error) {
-        container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Could not load tickets</h3><p>' + esc(res.error.message) + '</p></div>';
-        return;
-      }
+    try{
+      var res = await client.from('support_tickets').select('*').eq('user_id', currentUser.id).order('created_at', { ascending:false });
+      if (res.error){ container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Could not load tickets</h3><p>'+esc(res.error.message)+'</p></div>'; return; }
       var tickets = res.data || [];
-      if (!tickets.length) {
-        container.innerHTML = '<div class="empty-state"><div class="ic">💬</div><h3>No tickets yet</h3><p>Submit one anytime — we\'re listening.</p></div>';
-        return;
-      }
+      if (!tickets.length){ container.innerHTML = '<div class="empty-state"><div class="ic">💬</div><h3>No tickets yet</h3><p>Submit one anytime — we\'re listening.</p></div>'; return; }
       var html = '';
-      for (var i = 0; i < tickets.length; i++) {
+      for (var i=0;i<tickets.length;i++){
         var t = tickets[i];
-        var st = (t.status || 'open').toLowerCase();
-        var badge = st === 'resolved' || st === 'closed' ? 'badge-resolved' : 'badge-open';
-        html +=
-          '<div class="ticket-card">' +
-            '<div class="top"><h4>' + esc(t.subject || 'Untitled') + '</h4>' +
-              '<span class="badge ' + badge + '">' + esc(t.status || 'open') + '</span>' +
-            '</div>' +
-            '<div class="msg">' + esc(t.message || '') + '</div>' +
-            '<div class="foot">Sent ' + esc(fmtDate(t.created_at)) + '</div>' +
-          '</div>';
+        var st = (t.status||'open').toLowerCase();
+        var badge = st==='resolved'||st==='closed' ? 'badge-resolved' : 'badge-open';
+        html += '<div class="ticket-card"><div class="top"><h4>'+esc(t.subject||'Untitled')+'</h4><span class="badge '+badge+'">'+esc(t.status||'open')+'</span></div><div class="msg">'+esc(t.message||'')+'</div><div class="foot">Sent '+esc(fmtDate(t.created_at))+'</div></div>';
       }
       container.innerHTML = html;
-    } catch (err) {
-      container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Unexpected error</h3><p>' + esc(err.message || String(err)) + '</p></div>';
+    } catch(err){
+      container.innerHTML = '<div class="empty-state"><div class="ic">⚠️</div><h3>Unexpected error</h3><p>'+esc(err.message||String(err))+'</p></div>';
     }
   }
 
-  // ---------- DASHBOARD STATS ----------
-  async function loadStats() {
+  // ---------- STATS ----------
+  async function loadStats(){
     var client = requireClient(); if (!client || !currentUser) return;
-    try {
+    try{
       var oRes = await client.from('orders').select('status').eq('user_id', currentUser.id);
-      if (!oRes.error && oRes.data) {
-        var active = 0, completed = 0;
-        for (var i = 0; i < oRes.data.length; i++) {
-          var s = (oRes.data[i].status || '').toLowerCase();
-          if (s === 'completed' || s === 'delivered') completed++;
-          else active++;
+      if (!oRes.error && oRes.data){
+        var active=0, completed=0;
+        for (var i=0;i<oRes.data.length;i++){
+          var s=(oRes.data[i].status||'').toLowerCase();
+          if (s==='completed'||s==='delivered') completed++; else active++;
         }
         if ($('stat-active')) $('stat-active').textContent = active;
         if ($('stat-completed')) $('stat-completed').textContent = completed;
       }
       var tRes = await client.from('support_tickets').select('id').eq('user_id', currentUser.id);
-      if (!tRes.error && tRes.data && $('stat-tickets')) {
-        $('stat-tickets').textContent = tRes.data.length;
-      }
-    } catch (err) { console.warn('Stats load error:', err); }
+      if (!tRes.error && tRes.data && $('stat-tickets')) $('stat-tickets').textContent = tRes.data.length;
+    } catch(err){ console.warn('Stats load error:', err); }
   }
 
-  // ---------- GLOBAL DELEGATED CLICK ----------
-  function onGlobalClick(evt) {
-    // Close modal when clicking backdrop
-    if (evt.target && evt.target.classList && evt.target.classList.contains('modal-backdrop')) {
-      closeAllModals();
-      return;
-    }
+  // ---------- CLICK DELEGATION ----------
+  function onGlobalClick(evt){
+    if (evt.target && evt.target.classList && evt.target.classList.contains('modal-backdrop')){ closeAllModals(); return; }
     var el = evt.target.closest ? evt.target.closest('[data-nav],[data-action]') : null;
     if (!el) return;
-
     var navTarget = el.getAttribute('data-nav');
     var action = el.getAttribute('data-action');
-
-    if (navTarget) { evt.preventDefault(); navigate(navTarget); return; }
-
-    if (action === 'logout') { evt.preventDefault(); handleLogout(); return; }
-    if (action === 'close-modal') { evt.preventDefault(); closeAllModals(); return; }
-
-    if (action === 'place-order') {
-      evt.preventDefault();
-      if (!requireLogin('place a custom order')) return;
-      openModal('order');
-      return;
-    }
-    if (action === 'track-orders') {
-      evt.preventDefault();
-      if (!requireLogin('view your orders')) return;
-      navigate('orders');
-      return;
-    }
-    if (action === 'go-dashboard') {
-      evt.preventDefault();
-      if (!requireLogin('open your dashboard')) return;
-      navigate('dashboard');
-      return;
-    }
-    if (action === 'go-support') {
-      evt.preventDefault();
-      if (!requireLogin('open support')) return;
-      navigate('support');
-      return;
-    }
+    if (navTarget){ evt.preventDefault(); navigate(navTarget); return; }
+    if (action==='logout'){ evt.preventDefault(); handleLogout(); return; }
+    if (action==='close-modal'){ evt.preventDefault(); closeAllModals(); return; }
+    if (action==='clear-image'){ evt.preventDefault(); clearImageSelection(); return; }
+    if (action==='place-order'){ evt.preventDefault(); if (!requireLogin('place a custom order')) return; openModal('order'); return; }
+    if (action==='track-orders'){ evt.preventDefault(); if (!requireLogin('view your orders')) return; navigate('orders'); return; }
+    if (action==='go-dashboard'){ evt.preventDefault(); if (!requireLogin('open your dashboard')) return; navigate('dashboard'); return; }
+    if (action==='go-support'){ evt.preventDefault(); if (!requireLogin('open support')) return; navigate('support'); return; }
   }
-
-  // ESC closes modal
-  function onKeydown(e) {
-    if (e.key === 'Escape') closeAllModals();
-  }
+  function onKeydown(e){ if (e.key === 'Escape') closeAllModals(); }
 
   // ---------- BOOTSTRAP ----------
-  async function bootstrap() {
+  async function bootstrap(){
     var yearEl = $('year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
     var client = getClient();
-    if (!client) { console.warn('window.supabaseClient not found. Check supabase-config.js'); navigate('home'); return; }
-    try {
+    if (!client){ console.warn('window.supabaseClient not found. Check supabase-config.js'); navigate('home'); return; }
+    try{
       var sess = await client.auth.getSession();
       var user = sess && sess.data && sess.data.session ? sess.data.session.user : null;
-      setAuthedUI(user);
-      navigate(user ? 'dashboard' : 'home');
-      client.auth.onAuthStateChange(function (_event, session) {
-        setAuthedUI(session ? session.user : null);
-      });
-    } catch (err) { console.error('Bootstrap error:', err); navigate('home'); }
+      setAuthedUI(user); navigate(user ? 'dashboard' : 'home');
+      client.auth.onAuthStateChange(function(_event, session){ setAuthedUI(session ? session.user : null); });
+    } catch(err){ console.error('Bootstrap error:', err); navigate('home'); }
   }
 
-  function boot() {
+  function boot(){
     document.addEventListener('click', onGlobalClick, false);
     document.addEventListener('keydown', onKeydown, false);
     var sf = $('form-signup'); if (sf) sf.addEventListener('submit', handleSignup, false);
     var lf = $('form-login');  if (lf) lf.addEventListener('submit', handleLogin, false);
     var of = $('form-order');  if (of) of.addEventListener('submit', handleOrderSubmit, false);
     var tf = $('form-ticket'); if (tf) tf.addEventListener('submit', handleTicketSubmit, false);
+    var fi = $('order-image-file'); if (fi) fi.addEventListener('change', onImageFileSelected, false);
     bootstrap();
   }
 

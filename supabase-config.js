@@ -18,3 +18,4 @@
   window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   console.log('Ganesha Arts: Supabase connected successfully.');
 })();
+window.RAZORPAY_KEY_ID = "rzp_test_1234567890";

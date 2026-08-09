@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>Ganesha Arts — Master Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<style>
+:root{--bg:#0a0a0f;--surface:#111118;--card:#171720;--card2:#1c1c26;--gold:#d4a24c;--gold2:#f0ca79;--text:#f8f3ea;--muted:#9b98a1;--line:#ffffff12;--green:#55d68b;--red:#ff6666;--blue:#65a9ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at top,#17130d 0,#0a0a0f 38%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}.hidden{display:none!important}
+#lockScreen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#06060a;padding:20px}.lock-card{width:min(440px,100%);padding:38px;border-radius:28px;text-align:center;background:linear-gradient(145deg,#15151d,#0d0d13);border:1px solid #d4a24c35;box-shadow:0 25px 80px #000b}.om{font-size:48px;color:var(--gold2);text-shadow:0 0 30px #d4a24c55}.lock-card h1{margin:8px 0;font:700 29px Georgia,serif;color:var(--gold2)}.lock-card p{color:var(--muted)}
+.navbar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 28px;background:#0a0a0fe8;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#d4a24c16;border:1px solid #d4a24c33;color:var(--gold2);font-size:22px}.brand h1{margin:0;font:700 20px Georgia,serif;color:var(--gold2)}.brand small{color:var(--muted)}
+.container{width:min(1500px,calc(100% - 32px));margin:auto;padding:28px 0 70px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric{padding:20px;border-radius:20px;background:linear-gradient(145deg,#181820,#111118);border:1px solid #d4a24c22;box-shadow:0 12px 30px #0005}.metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.metric-value{margin-top:7px;font-size:28px;font-weight:800;color:var(--gold2)}.metric-note{margin-top:4px;font-size:11px;color:#77747d}
+.tabs{display:flex;gap:8px;overflow:auto;margin:25px 0 20px;padding:6px;border:1px solid var(--line);border-radius:16px;background:#111118}.tab-btn{border:0;background:transparent;color:#aaa;padding:12px 18px;border-radius:11px;cursor:pointer;white-space:nowrap}.tab-btn.active{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:800}.tab-content{display:none}.tab-content.active{display:block}
+.panel{overflow:hidden;border-radius:20px;background:#101017;border:1px solid var(--line);box-shadow:0 15px 45px #0005}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px;border-bottom:1px solid var(--line)}.panel-head h2{margin:0;font:700 23px Georgia,serif;color:var(--gold2)}.panel-head p{margin:6px 0 0;color:var(--muted);font-size:13px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.input,.select,.textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #ffffff18;background:#0c0c12;color:#fff;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:#d4a24c66}.textarea{min-height:90px;resize:vertical}.search{width:260px}.btn{padding:10px 14px;border-radius:10px;border:1px solid #ffffff18;background:#1a1a23;color:#fff;cursor:pointer}.btn:hover{border-color:#d4a24c66}.btn:disabled{opacity:.45;cursor:not-allowed}.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));border:0;color:#111;font-weight:800}.btn-green{background:#55d68b;color:#07150c;border:0;font-weight:700}.btn-red{background:#9e3434;color:#fff;border:0}.btn-blue{background:#245c98;color:#fff;border:0}
+.table-wrap{overflow:auto}table{width:100%;min-width:1250px;border-collapse:collapse}th,td{padding:13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}th{font-size:10px;color:var(--gold2);text-transform:uppercase;letter-spacing:.06em;background:#111118;position:sticky;top:0}.order-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold2)}.muted{color:var(--muted)}.amount,.wallet{font-weight:800;color:var(--gold2)}.badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#d4a24c16;color:var(--gold2);margin-top:4px}.badge-green{background:#55d68b16;color:#8ef0b6}.badge-red{background:#ff666616;color:#ff9696}.thumb{width:68px;height:68px;object-fit:cover;border-radius:9px;border:1px solid #d4a24c33;cursor:pointer;display:block}.status-select{min-width:160px}
+.loading,.empty{padding:55px;text-align:center;color:var(--muted)}.request-card{margin:15px;padding:22px;border-radius:17px;background:linear-gradient(145deg,#171720,#111118);border:1px solid var(--line)}.request-top{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.request-top h3{margin:7px 0;font:700 20px Georgia,serif;color:var(--gold2)}.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.info-box{padding:13px;border-radius:12px;background:#ffffff04;border:1px solid var(--line)}.info-box small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.refund-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.refund-box{padding:17px;border-radius:14px;background:#d4a24c09;border:1px solid #d4a24c2b}.refund-box small{display:block;color:var(--muted);margin-bottom:5px}.refund-box strong{color:var(--gold2);font-size:16px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.modal{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;background:#000d;padding:18px}.modal-card{width:min(700px,100%);max-height:92vh;overflow:auto;border-radius:22px;padding:23px;background:#121219;border:1px solid #d4a24c35;box-shadow:0 30px 100px #000}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.modal-head h3{margin:0;color:var(--gold2);font:700 21px Georgia,serif}.close{width:34px;height:34px;border:0;border-radius:50%;background:#24242d;color:#fff;cursor:pointer}.photo-preview{display:block;max-width:100%;max-height:78vh;margin:15px auto 0;border-radius:12px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin:14px 0}.field label{display:block;margin-bottom:6px;color:#bbb;font-size:11px}.toast{position:fixed;right:18px;bottom:18px;z-index:9000;padding:14px 16px;border-radius:12px;background:#1a1a22;border:1px solid #ffffff18;box-shadow:0 12px 40px #0008}.danger-note{padding:11px 13px;border-radius:10px;background:#ff666610;color:#ff9b9b;font-size:12px}
+@media(max-width:1050px){.metrics{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.navbar{padding:13px 15px}.container{width:calc(100% - 20px);padding-top:18px}.metrics{gap:8px}.metric{padding:14px}.metric-value{font-size:21px}.brand h1{font-size:17px}.brand small{display:none}.search{width:100%}.form-row,.refund-grid,.info-grid{grid-template-columns:1fr}.panel-head{padding:15px}}
+</style>
+</head>
+<body>
+
+<section id="lockScreen">
+  <div class="lock-card">
+    <div class="om">ॐ</div>
+    <h1>Ganesha Arts</h1>
+    <p>Master Admin Panel</p>
+    <form id="passkeyForm">
+      <div class="field"><label>Admin Passkey</label><input id="passkey" class="input" type="password" autocomplete="off" required></div>
+      <button class="btn btn-gold" style="width:100%">Unlock Admin Panel</button>
+    </form>
+    <div id="lockError" style="color:#ff7777;margin-top:12px;font-size:13px"></div>
+  </div>
+</section>
+
+<main id="app" class="hidden">
+<nav class="navbar">
+  <div class="brand"><div class="brand-mark">ॐ</div><div><h1>Ganesha Arts Admin</h1><small>Master Control Panel</small></div></div>
+  <div class="toolbar"><button id="refreshBtn" class="btn">↻ Refresh</button><button id="logoutBtn" class="btn">Lock</button></div>
+</nav>
+
+<div class="container">
+  <section class="metrics">
+    <div class="metric"><div class="metric-label">Total Revenue</div><div id="metricRevenue" class="metric-value">₹0</div><div class="metric-note">Paid / verified orders</div></div>
+    <div class="metric"><div class="metric-label">Total Orders</div><div id="metricOrders" class="metric-value">0</div><div class="metric-note">All orders</div></div>
+    <div class="metric"><div class="metric-label">Active Orders</div><div id="metricActive" class="metric-value">0</div><div class="metric-note">Pending / in progress / shipped</div></div>
+    <div class="metric"><div class="metric-label">Pending Cancellations</div><div id="metricCancellations" class="metric-value">0</div><div class="metric-note">Awaiting approval</div></div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="ordersTab">📦 Orders Management</button>
+    <button class="tab-btn" data-tab="cancellationsTab">↩️ Cancellation Requests</button>
+    <button class="tab-btn" data-tab="walletTab">💰 Customer Wallet Management</button>
+  </div>
+
+  <section id="ordersTab" class="tab-content active">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Custom Portrait Orders</h2><p>View complete order information and update status live.</p></div>
+        <div class="toolbar"><input id="orderSearch" class="input search" placeholder="Search order, client, phone..."><button id="clearOrderSearch" class="btn">Clear</button></div>
+      </div>
+      <div id="ordersContainer" class="table-wrap"><div class="loading">Loading orders...</div></div>
+    </div>
+  </section>
+
+  <section id="cancellationsTab" class="tab-content">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Cancellation & Refund Approval</h2><p>Tiered wallet refund: ≤1 hour = 100%; &gt;1–24 hours = 95%.</p></div></div>
+      <div id="cancellationsContainer"><div class="loading">Loading cancellation requests...</div></div>
+    </div>
+  </section>
+
+  <section id="walletTab" class="tab-content">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Customer Wallets</h2><p>View and manually add or deduct wallet funds.</p></div>
+        <input id="walletSearch" class="input search" placeholder="Search customer...">
+      </div>
+      <div id="walletContainer" class="table-wrap"><div class="loading">Loading customer profiles...</div></div>
+    </div>
+  </section>
+</div>
+</main>
+
+<div id="photoModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h3>Reference Photo Preview</h3><button class="close" data-close="photoModal">×</button></div>
+    <img id="previewImage" class="photo-preview" alt="Reference photo">
+  </div>
+</div>
+
+<div id="walletModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h3>Adjust Customer Wallet</h3><button class="close" data-close="walletModal">×</button></div>
+    <p id="walletUserInfo" class="muted"></p>
+    <form id="walletForm">
+      <input id="walletUserId" type="hidden">
+      <div class="field"><label>Current Balance</label><input id="walletCurrent" class="input" readonly></div>
+      <div class="form-row">
+        <div class="field"><label>Action</label><select id="walletAction" class="select"><option value="add">Add Funds</option><option value="deduct">Deduct Funds</option></select></div>
+        <div class="field"><label>Amount (₹)</label><input id="walletAmount" class="input" type="number" min=".01" step=".01" required></div>
+      </div>
+      <div class="field"><label>Reason / Note</label><textarea id="walletReason" class="textarea" required placeholder="Why is this adjustment being made?"></textarea></div>
+      <div class="danger-note">Wallet balance changes are written directly to the profiles table.</div>
+      <button class="btn btn-gold" style="width:100%;margin-top:14px">Save Wallet Adjustment</button>
+    </form>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+const ADMIN_PASSKEY="ganesha123";
+let db=null,orders=[],profiles=[];
+
+const $=id=>document.getElementById(id);
+const esc=v=>v==null?"":String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const money=v=>"₹"+Number(v||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const dt=v=>{if(!v)return"—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})};
+const amount=o=>Number(o?.total_amount??o?.amount??o?.price??0);
+const client=o=>o?.client_name||o?.customer_name||o?.name||"Unknown Client";
+const phone=o=>o?.contact_phone||o?.phone||o?.client_phone||"—";
+const userId=o=>o?.user_id||o?.client_id||o?.customer_id||null;
+const reference=o=>o?.image_data||o?.reference||o?.reference_photo||o?.photo_url||"";
+
+function initDB(){
+  if(window.supabaseClient && typeof window.supabaseClient.from==="function"){db=window.supabaseClient;return true}
+  if(window.supabase && typeof SUPABASE_URL!=="undefined" && typeof SUPABASE_PUBLISHABLE_KEY!=="undefined"){
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    window.supabaseClient=db;return true;
+  }
+  return false;
+}
+function toast(message){const el=document.createElement("div");el.className="toast";el.textContent=message;$("toastContainer").appendChild(el);setTimeout(()=>el.remove(),4200)}
+function setLoading(id,msg){$(id).innerHTML='<div class="loading">'+esc(msg)+'</div>'}
+
+$("passkeyForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  $("lockError").textContent="";
+  if($("passkey").value!==ADMIN_PASSKEY){$("lockError").textContent="Incorrect admin passkey.";return}
+  if(!initDB()){$("lockError").textContent="Supabase connection not found. Check supabase-config.js.";return}
+  $("lockScreen").classList.add("hidden");$("app").classList.remove("hidden");
+  await refreshAll();
+});
+$("logoutBtn").onclick=()=>{$("app").classList.add("hidden");$("lockScreen").classList.remove("hidden");$("passkey").value=""};
+$("refreshBtn").onclick=refreshAll;
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=async()=>{
+    document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");$(btn.dataset.tab).classList.add("active");
+    if(btn.dataset.tab==="cancellationsTab")await loadCancellations();
+    if(btn.dataset.tab==="walletTab")await loadProfiles();
+  };
+});
+
+async function refreshAll(){
+  await loadOrders();
+  await loadProfiles();
+  await loadCancellations();
+}
+
+function statusOptions(current){
+  return ["Pending","In Progress","Completed","Shipped","Cancelled","Cancellation Requested"]
+    .map(s=>'<option value="'+esc(s)+'" '+(s===current?"selected":"")+'>'+esc(s)+'</option>').join("");
+}
+
+async function loadOrders(){
+  setLoading("ordersContainer","Loading orders...");
+  const {data,error}=await db.from("orders").select("*").order("created_at",{ascending:false});
+  if(error){$("ordersContainer").innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  orders=data||[];renderOrders(orders);updateMetrics();
+}
+
+function renderOrders(list){
+  if(!list.length){$("ordersContainer").innerHTML='<div class="empty">No orders found.</div>';return}
+  $("ordersContainer").innerHTML=`<table>
+  <thead><tr>
+  <th>Order ID</th><th>Client</th><th>Contact</th><th>Shipping Address</th><th>Paper Size</th><th>Medium</th><th>Reference</th><th>Special Requirements</th><th>Total</th><th>Payment</th><th>Gateway ID</th><th>Order Status</th><th>Created</th>
+  </tr></thead>
+  <tbody>${list.map(o=>`<tr>
+  <td class="order-id">${esc(o.id||"—")}</td>
+  <td><b>${esc(client(o))}</b><div class="muted">${esc(userId(o)||"No user ID")}</div></td>
+  <td>${esc(phone(o))}</td>
+  <td>${esc([o.shipping_address||o.address,o.shipping_city||o.city,o.shipping_pincode||o.pincode].filter(Boolean).join(", ")||"—")}</td>
+  <td>${esc(o.paper_size||o.page_size||"—")}</td>
+  <td>${esc(o.medium||o.category||o.art_category||"—")}</td>
+  <td>${reference(o)?`<img class="thumb" src="${esc(reference(o))}" alt="Reference" onclick="openPhoto(this.src)">`:"—"}</td>
+  <td>${esc(o.special_requirements||o.requirements||"—")}</td>
+  <td class="amount">${money(amount(o))}</td>
+  <td>${esc(o.payment_method||o.payment_type||"—")}<br><span class="badge">${esc(o.payment_status||"Pending")}</span></td>
+  <td class="order-id">${esc(o.gateway_id||o.transaction_id||o.payment_id||"—")}</td>
+  <td><select class="select status-select" onchange="changeStatus('${esc(o.id)}',this.value)">${statusOptions(o.status||"Pending")}</select></td>
+  <td>${dt(o.created_at)}</td>
+  </tr>`).join("")}</tbody></table>`;
+}
+
+async function changeStatus(id,status){
+  const {error}=await db.from("orders").update({status}).eq("id",id);
+  if(error){toast(error.message);await loadOrders();return}
+  toast("Order status updated to "+status);
+  await loadOrders();
+}
+
+$("orderSearch").oninput=()=>{
+  const q=$("orderSearch").value.trim().toLowerCase();
+  renderOrders(q?orders.filter(o=>[o.id,client(o),phone(o),o.status,o.payment_status,o.payment_method].filter(Boolean).join(" ").toLowerCase().includes(q)):orders);
+};
+$("clearOrderSearch").onclick=()=>{$("orderSearch").value="";renderOrders(orders)};
+
+async function loadCancellations(){
+  setLoading("cancellationsContainer","Loading cancellation requests...");
+  const {data,error}=await db.from("orders").select("*").eq("status","Cancellation Requested").order("created_at",{ascending:false});
+  if(error){$("cancellationsContainer").innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  const list=data||[];$("metricCancellations").textContent=list.length;
+  if(!list.length){$("cancellationsContainer").innerHTML='<div class="empty">No pending cancellation requests.</div>';return}
+  $("cancellationsContainer").innerHTML=list.map(o=>{
+    const hours=(Date.now()-new Date(o.created_at).getTime())/3600000;
+    const total=amount(o);
+    const refund=hours<=1?total:hours<=24?total*.95:0;
+    const fee=total-refund;
+    const rule=hours<=1?"Full Refund (100%)":hours<=24?"Partial Refund (95%) — 5% Fee Deducted":"Refund Window Expired";
+    return `<article class="request-card">
+      <div class="request-top"><div><div class="order-id">Order #${esc(o.id)}</div><h3>${esc(client(o))}</h3><div class="muted">${esc(phone(o))}</div></div><span class="badge">Cancellation Requested</span></div>
+      <div class="info-grid">
+        <div class="info-box"><small>Order Amount</small><b>${money(total)}</b></div>
+        <div class="info-box"><small>Elapsed Time</small><b>${hours.toFixed(2)} hours</b></div>
+        <div class="info-box"><small>Payment Method</small><b>${esc(o.payment_method||"—")}</b></div>
+        <div class="info-box"><small>Created</small><b>${dt(o.created_at)}</b></div>
+      </div>
+      <div class="refund-grid">
+        <div class="refund-box"><small>Refund Eligible</small><strong>${money(refund)}</strong></div>
+        <div class="refund-box"><small>Fee Deducted</small><strong>${money(fee)}</strong></div>
+        <div class="refund-box"><small>Rule</small><strong>${rule}</strong></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-green" ${refund<=0?"disabled":""} onclick="approveCancellation('${esc(o.id)}')">✓ Approve Cancellation & Refund</button>
+        <button class="btn btn-red" onclick="rejectCancellation('${esc(o.id)}')">✕ Reject</button>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+async function approveCancellation(id){
+  if(!confirm("Approve cancellation and credit the calculated refund to the client's wallet?"))return;
+  const {data:o,error:oe}=await db.from("orders").select("*").eq("id",id).single();
+  if(oe||!o){toast("Order not found.");return}
+  const hours=(Date.now()-new Date(o.created_at).getTime())/3600000;
+  const total=amount(o);
+  const refund=hours<=1?total:hours<=24?total*.95:0;
+  if(refund<=0){toast("Refund window has expired.");return}
+  const uid=userId(o);
+  if(!uid){toast("This order has no user_id/client_id.");return}
+
+  const {data:profile,error:pe}=await db.from("profiles").select("id,wallet_balance").eq("user_id",uid).maybeSingle();
+  if(pe||!profile){toast("Client profile not found for this order.");return}
+
+  const oldBalance=Number(profile.wallet_balance||0);
+  const newBalance=Math.round((oldBalance+refund)*100)/100;
+
+  const {error:walletError}=await db.from("profiles").update({wallet_balance:newBalance}).eq("id",profile.id);
+  if(walletError){toast("Wallet update failed: "+walletError.message);return}
+
+  const {error:orderError}=await db.from("orders").update({status:"Cancelled",payment_status:"Refunded to Wallet"}).eq("id",id);
+  if(orderError){
+    await db.from("profiles").update({wallet_balance:oldBalance}).eq("id",profile.id);
+    toast("Order update failed. Wallet was rolled back.");
+    return;
+  }
+  toast("Cancellation approved. "+money(refund)+" credited to wallet.");
+  await refreshAll();
+}
+
+async function rejectCancellation(id){
+  const {error}=await db.from("orders").update({status:"In Progress"}).eq("id",id);
+  if(error){toast(error.message);return}
+  toast("Cancellation rejected; order returned to In Progress.");
+  await refreshAll();
+}
+
+async function loadProfiles(){
+  setLoading("walletContainer","Loading customer profiles...");
+  const {data,error}=await db.from("profiles").select("*").order("created_at",{ascending:false});
+  if(error){$("walletContainer").innerHTML='<div class="empty">'+esc(error.message)+'</div>';return}
+  profiles=data||[];renderProfiles(profiles);
+}
+
+function renderProfiles(list){
+  if(!list.length){$("walletContainer").innerHTML='<div class="empty">No customer profiles found.</div>';return}
+  $("walletContainer").innerHTML=`<table>
+  <thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>User ID</th><th>Wallet Balance</th><th>Action</th></tr></thead>
+  <tbody>${list.map(p=>`<tr>
+    <td><b>${esc(p.full_name||p.name||p.display_name||"Unnamed Client")}</b></td>
+    <td>${esc(p.email||"—")}</td>
+    <td>${esc(p.phone||"—")}</td>
+    <td class="order-id">${esc(p.user_id||p.id||"—")}</td>
+    <td class="wallet">${money(p.wallet_balance)}</td>
+    <td><button class="btn btn-gold" onclick="openWallet('${esc(p.id)}')">Adjust Balance</button></td>
+  </tr>`).join("")}</tbody></table>`;
+}
+
+$("walletSearch").oninput=()=>{
+  const q=$("walletSearch").value.trim().toLowerCase();
+  renderProfiles(q?profiles.filter(p=>[p.id,p.user_id,p.full_name,p.name,p.display_name,p.email,p.phone].filter(Boolean).join(" ").toLowerCase().includes(q)):profiles);
+};
+
+function openWallet(id){
+  const p=profiles.find(x=>String(x.id)===String(id));if(!p)return;
+  $("walletUserId").value=p.id;
+  $("walletCurrent").value=money(p.wallet_balance);
+  $("walletUserInfo").textContent=(p.full_name||p.name||p.display_name||"Client")+" • "+(p.email||p.phone||"");
+  $("walletAmount").value="";$("walletReason").value="";$("walletModal").classList.remove("hidden");
+}
+
+$("walletForm").onsubmit=async e=>{
+  e.preventDefault();
+  const p=profiles.find(x=>String(x.id)===String($("walletUserId").value));
+  const n=Number($("walletAmount").value),action=$("walletAction").value,reason=$("walletReason").value.trim();
+  if(!p||!Number.isFinite(n)||n<=0||!reason){toast("Enter a valid amount and reason.");return}
+  const old=Number(p.wallet_balance||0),next=action==="add"?old+n:old-n;
+  if(next<0){toast("Deduction cannot exceed current wallet balance.");return}
+  const {error}=await db.from("profiles").update({wallet_balance:Math.round(next*100)/100}).eq("id",p.id);
+  if(error){toast("Wallet update failed: "+error.message);return}
+  toast("Wallet balance updated successfully.");
+  $("walletModal").classList.add("hidden");await loadProfiles();
+};
+
+function openPhoto(url){$("previewImage").src=url;$("photoModal").classList.remove("hidden")}
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).classList.add("hidden"));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden")}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal").forEach(m=>m.classList.add("hidden"))});
+
+function updateMetrics(){
+  const active=orders.filter(o=>["pending","in progress","shipped"].includes(String(o.status||"").toLowerCase())).length;
+  const revenue=orders.filter(o=>/paid|verified|success|completed/i.test(String(o.payment_status||""))).reduce((s,o)=>s+amount(o),0);
+  $("metricOrders").textContent=orders.length;
+  $("metricActive").textContent=active;
+  $("metricRevenue").textContent=money(revenue);
+  $("metricCancellations").textContent=orders.filter(o=>o.status==="Cancellation Requested").length;
+}
+</script>
+</body>
+</html>

@@ -1356,10 +1356,6 @@ Please contact Ganesha Arts support with this Payment ID.');return;}
     if($('client-chat-ticket'))$('client-chat-ticket').textContent=found.ticket_id;
     if($('client-chat-status'))$('client-chat-status').textContent=supportStatusLabel(found.status);
     renderSupportTickets();
-    if(normalizeSupportStatus(found.status)==='pending'){
-      try{await setConversationStatus(found.ticket_id,'running');found.status='running';}catch(err){console.error('Status update error:',err);}
-      if($('client-chat-status'))$('client-chat-status').textContent='RUNNING';
-    }
     if($('client-chat-thread'))$('client-chat-thread').innerHTML='<div class="chat-empty-client"><span class="spinner spinner-lg"></span></div>';
     await refreshActiveSupportChat();
     if(supportPoll)clearInterval(supportPoll);supportPoll=setInterval(refreshActiveSupportChat,4000);

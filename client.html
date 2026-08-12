@@ -1367,22 +1367,35 @@ Please contact Ganesha Arts support with this Payment ID.');return;}
   window.openTicketChat=openTicketChat;
   window.openSupportChat=openTicketChat;
 
-  async function sendClientSupportMessage(){
+    async function sendClientSupportMessage(){
     if(!activeSupportTicket||!currentUser)return;
     var input=$('client-chat-input'),text=(input&&input.value||'').trim();if(!text)return;
     var client=requireClient();if(!client)return;
     var profile=await loadCurrentProfile();
-    var msg={ticket_id:String(activeSupportTicket.ticket_id),user_id:currentUser.id,client_name:(profile&&profile.full_name)||supportPersonName(),client_mobile:(profile&&profile.phone)||supportPersonMobile(),client_email:(profile&&profile.email)||currentUser.email||'',sender:'client',message:text,status:'running',subject:activeSupportTicket.subject||'Support Conversation',created_at:new Date().toISOString()};
+    var msg={
+      ticket_id:String(activeSupportTicket.ticket_id),
+      user_id:currentUser.id,
+      client_name:(profile&&profile.full_name)||supportPersonName(),
+      client_mobile:(profile&&profile.phone)||supportPersonMobile(),
+      client_email:(profile&&profile.email)||currentUser.email||'',
+      sender:'client',
+      message:text,
+      status: activeSupportTicket.status || 'pending', // <-- FIXED: Pehle se jo status hai wahi rahega ('pending' by default)
+      subject:activeSupportTicket.subject||'Support Conversation',
+      created_at:new Date().toISOString()
+    };
     var sendBtn=$('client-send-message');setLoading(sendBtn,true,'Send →');
     try{
       var r=await client.from('support_messages').insert(msg).select().single();
       if(r.error)throw r.error;
-      input.value='';activeSupportTicket.status='running';if($('client-chat-status'))$('client-chat-status').textContent='RUNNING';
+      input.value='';
+      // FIXED: Screen par status forcefully 'RUNNING' nahi dikhayega
+      if($('client-chat-status'))$('client-chat-status').textContent=supportStatusLabel(activeSupportTicket.status);
       await refreshActiveSupportChat();await loadSupportTickets();
     }catch(err){console.error('support_messages insert error:',err);alert('Message could not be sent: '+err.message);}
     finally{setLoading(sendBtn,false,'Send →');}
-  }
-
+    }
+  
   function showNewTicketModal(){if(!requireLogin('start a support conversation'))return;loadCurrentProfile();openModal('ticket');}
   function closeSupportChatView(){
     activeSupportTicket=null;if(supportPoll){clearInterval(supportPoll);supportPoll=null;}if(supportChannel){try{var c=requireClient();if(c)c.removeChannel(supportChannel);}catch(e){}supportChannel=null;}

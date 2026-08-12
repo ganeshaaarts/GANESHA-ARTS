@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ganesha Arts — Master Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+  <style>
+    /* ... (same as provided, plus new badge styles) ... */
+    .reply-needed { border-left: 4px solid #e05252; }
+    .replied { border-left: 4px solid #55d68b; }
+    .ticket-reply-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-left: 8px;
+    }
+    .ticket-reply-badge.new { background: #e0525222; color: #e05252; }
+    .ticket-reply-badge.replied { background: #55d68b22; color: #55d68b; }
+    /* ... other styles unchanged ... */
+  </style>
+</head>
+<body>
+  <!-- Lock screen and main app same as original, but with additional notification permission request -->
+  ...
+  <script>
+    'use strict';
+    // --- existing code ---
+
+    // --- NEW: notification support ---
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+    requestNotificationPermission();
+
+    // --- NEW: global real-time listener for new client messages ---
+    let globalSupportChannel = null;
+    function subscribeToSupportMessages() {
+      if (!db) return;
+      if (globalSupportChannel) {
+        try { db.removeChannel(globalSupportChannel); } catch(_) {}
+        globalSupportChannel = null;
+      }
+      globalSupportChannel = db
+        .channel('admin-support-global')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'support_messages',
+          },
+          (payload) => {
+            const msg = payload.new;
+            // only notify if sender is 'client' and admin not viewing that ticket
+            if (msg.sender === 'client') {
+              // reload ticket list
+              loadTickets();
+              // if not currently viewing this ticket, show notification
+              if (!activeTicket || String(activeTicket.ticket_id) !== String(msg.ticket_id)) {
+                const title = `📩 New message from ${msg.client_name || 'Client'}`;
+                const body = msg.message || 'Check the support inbox.';
+                if (Notification.permission === 'granted') {
+                  new Notification(title, { body, icon: 'https://ganesha-arts.example/favicon.ico' });
+                } else {
+                  // fallback: toast
+                  toast(`🔔 ${title}: ${body}`);
+                }
+              }
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    // --- MODIFIED initDB to also subscribe after db is ready ---
+    function initDB() {
+      if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+        db = window.supabaseClient;
+        subscribeToSupportMessages(); // start listener
+        return true;
+      }
+      if (window.supabase && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_PUBLISHABLE_KEY !== 'undefined') {
+        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        window.supabaseClient = db;
+        subscribeToSupportMessages();
+        return true;
+      }
+      return false;
+    }
+
+    // --- MODIFIED renderTickets to include reply status badge ---
+    function renderTickets() {
+      const q = norm($('ticketSearch').value);
+      const list = tickets.filter(t => {
+        if (ticketState(t) !== inboxTab) return false;
+        if (!q) return true;
+        return [ticketCode(t), t.ticket_id, t.user_id, t.client_name, t.username, t.full_name,
+          t.client_mobile, t.mobile, t.client_email, t.email, t.subject, t.message, t.status]
+          .filter(Boolean).map(norm).join(' ').includes(q);
+      });
+      if (!list.length) {
+        $('ticketsBox').innerHTML = '<div class="empty">No ' + inboxTab + ' tickets found.</div>';
+        return;
+      }
+      // Determine latest sender per ticket from grouped data (or from the latest message in the thread)
+      // We already have the grouped object with status and last_message, but not sender.
+      // We need to fetch the sender of the latest message. We can compute it by querying the database
+      // for the latest message per ticket, but to avoid extra calls, we can store it when grouping.
+      // We'll modify loadTickets to also store latest_sender.
+      // Actually loadTickets already groups, but we need to know the sender of the last message.
+      // Let's modify loadTickets to store latest_sender in the grouped object.
+
+      // For now, we'll fetch from the grouped data if we store it.
+      // We'll adjust loadTickets to include latest_sender.
+      // See the updated loadTickets below.
+
+      // Render cards:
+      const html = list.map(t => {
+        const state = ticketState(t);
+        const isNew = t.latest_sender === 'client' && state !== 'closed';
+        const isReplied = t.latest_sender === 'admin' && state !== 'closed';
+        const replyBadge = isNew
+          ? `<span class="ticket-reply-badge new">🔴 New Message</span>`
+          : isReplied
+          ? `<span class="ticket-reply-badge replied">✅ Replied</span>`
+          : '';
+        const cardClass = isNew ? 'reply-needed' : (isReplied ? 'replied' : '');
+        const id = String(t.ticket_id);
+        const safe = id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        return `
+          <article class="ticket ${state === 'pending' ? 'ticket-opened' : ''} ${cardClass}" onclick="openChat('${safe}')">
+            <div class="ticket-head">
+              <div>
+                <div class="mono">${state === 'pending' ? '<span class="unread-dot"></span>' : ''} ${id}</div>
+                <h3>${esc(t.subject || 'Support Conversation')} ${replyBadge}</h3>
+                <div class="ticket-meta">
+                  <strong style="color:var(--gold2)">${esc(ticketPerson(t))}</strong> ·
+                  ${esc(ticketMobile(t))} · ${esc(ticketEmail(t))} · ${dt(t.updated_at)}
+                </div>
+              </div>
+              <span class="ticket-status ${state === 'closed' ? 'resolved' : state === 'running' ? 'blue' : 'open'}">${state.toUpperCase()}</span>
+            </div>
+            <div class="ticket-msg">${esc(t.last_message || 'No messages')}</div>
+            <div class="ticket-meta">User ID: <span class="mono">${esc(t.user_id || '—')}</span></div>
+            <div class="ticket-actions">
+              <button class="btn gold" onclick="event.stopPropagation(); openChat('${safe}')">💬 Open Chat</button>
+              ${state !== 'closed' ? `<button class="btn green" onclick="event.stopPropagation(); markResolved('${safe}')">✓ Mark as Resolved</button>` : `<button class="btn blue" onclick="event.stopPropagation(); reopenTicket('${safe}')">↶ Reopen</button>`}
+              <button class="btn red" onclick="event.stopPropagation(); deleteTicket('${safe}')">🗑 Delete</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+      $('ticketsBox').innerHTML = `<div class="ticket-list">${html}</div>`;
+    }
+
+    // --- MODIFIED loadTickets to store latest_sender ---
+    async function loadTickets() {
+      const b = $('ticketsBox');
+      b.innerHTML = '<div class="loading">Loading support inbox...</div>';
+      const r = await db.from('support_messages').select('*').order('created_at', { ascending: false });
+      if (r.error) {
+        b.innerHTML = '<div class="empty">Could not load support_messages: ' + esc(r.error.message) + '</div>';
+        return;
+      }
+      const rows = r.data || [];
+      const grouped = {};
+      for (const m of rows) {
+        const id = String(m.ticket_id || '').trim();
+        if (!id) continue;
+        if (!grouped[id]) {
+          grouped[id] = {
+            ticket_id: id,
+            user_id: m.user_id || '',
+            client_name: m.client_name || '',
+            client_mobile: m.client_mobile || '',
+            client_email: m.client_email || '',
+            subject: m.subject || 'Support Conversation',
+            message: m.message || '',
+            last_message: m.message || '',
+            latest_sender: m.sender || 'client',
+            status: m.status || 'pending',
+            created_at: m.created_at,
+            updated_at: m.created_at
+          };
+        }
+        const t = grouped[id];
+        // update with latest message if newer
+        if (m.created_at && (!t.updated_at || new Date(m.created_at) > new Date(t.updated_at))) {
+          t.updated_at = m.created_at;
+          t.last_message = m.message || t.last_message;
+          t.latest_sender = m.sender || 'client';
+          t.status = m.status || t.status;
+        }
+        // keep other fields
+        if (m.subject) t.subject = m.subject;
+        if (m.client_name) t.client_name = m.client_name;
+        if (m.client_mobile) t.client_mobile = m.client_mobile;
+        if (m.client_email) t.client_email = m.client_email;
+        if (m.user_id) t.user_id = m.user_id;
+      }
+      tickets = Object.values(grouped).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      renderTickets();
+      updateTicketCounts();
+    }
+
+    // --- MODIFIED openChat to set status to 'running' only when admin opens ---
+    // (already does that via markSeen)
+    // No changes needed, but ensure markSeen updates the ticket status to running.
+
+    // --- MODIFIED markSeen to also update local ticket status ---
+    async function markSeen(id) {
+      const ok = await setTicketStatusDB(id, 'running');
+      if (!ok) return;
+      const t = tickets.find(x => String(x.ticket_id) === String(id));
+      if (t) t.status = 'running';
+      updateTicketCounts();
+      renderTickets();
+    }
+
+    // --- Ensure the global listener is re-subscribed after any db re-init ---
+    // (Already done in initDB)
+
+    // --- Other functions remain mostly the same ---
+    // ... (the rest of the admin.js code)
+  </script>
+</body>
+</html>

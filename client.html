@@ -2106,13 +2106,62 @@
     var client = getClient();
     if (!client){ console.warn('window.supabaseClient not found. Check supabase-config.js'); navigate('home'); return; }
     try{
-      var sess = await client.auth.getSession();
-      var user = sess && sess.data && sess.data.session ? sess.data.session.user : null;
-      setAuthedUI(user); navigate(user ? 'dashboard' : 'home');
-      if (user){ loadWallet(); loadCurrentProfile(); }
-      client.auth.onAuthStateChange(function(_event, session){ setAuthedUI(session ? session.user : null); if (session && session.user){ loadWallet(); loadCurrentProfile(); } else { closeSupportChatView(); } });
-      // Handle recovery token
+      var recoveryFlow =
+  window.location.hash &&
+  window.location.hash.includes('type=recovery');
+
+if (recoveryFlow) {
+  // IMPORTANT:
+  // Recovery session ko normal login mat samjho.
+  navigate('home');
+} else {
+  var sess = await client.auth.getSession();
+  var user = sess && sess.data && sess.data.session
+    ? sess.data.session.user
+    : null;
+
+  setAuthedUI(user);
+  navigate(user ? 'dashboard' : 'home');
+
+  if (user){
+    loadWallet();
+    loadCurrentProfile();
+  }
+}
+
+client.auth.onAuthStateChange(function(event, session){
+
+  // Password recovery session
+  if (event === 'PASSWORD_RECOVERY') {
+    setAuthedUI(null);
+    navigate('home');
+
+    setTimeout(function(){
       handleRecoveryToken();
+    }, 100);
+
+    return;
+  }
+
+  // Normal login/logout
+  if (recoveryFlow) return;
+
+  setAuthedUI(session ? session.user : null);
+
+  if (session && session.user){
+    loadWallet();
+    loadCurrentProfile();
+  } else {
+    closeSupportChatView();
+  }
+});
+
+// Recovery link handling
+if (recoveryFlow) {
+  setTimeout(function(){
+    handleRecoveryToken();
+  }, 300);
+}
     } catch(err){ console.error('Bootstrap error:', err); navigate('home'); }
   }
 

@@ -1355,7 +1355,7 @@
     if(method === 'email'){
       // Send reset email
       try{
-        var { error } = await client.auth.resetPasswordForEmail(identifier, { redirectTo: window.location.origin + '/client.html' });
+        var { error } = await client.auth.resetPasswordForEmail(identifier, { redirectTo: 'https://ganeshaaarts.github.io/GANESHA-ARTS/client.html' });
         if(error) throw error;
         alert('Password reset email sent. Please check your inbox (and spam folder).');
         closeAllModals();

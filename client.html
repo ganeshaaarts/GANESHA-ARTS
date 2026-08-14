@@ -2090,11 +2090,33 @@
         if (newPass !== confirmPass) { alert('Passwords do not match.'); return; }
         var client = requireClient(); if (!client) return;
         try{
-          var { error } = await client.auth.updateUser({ password: newPass });
-          if (error) throw error;
-          alert('Password updated successfully. You can now sign in.');
-          closeAllModals();
-          window.location.hash = '';
+          var { error } = await client.auth.updateUser({
+  password: newPass
+});
+
+if (error) throw error;
+
+// Password successfully changed.
+// End the temporary recovery session so the user
+// must explicitly log in with the NEW password.
+await client.auth.signOut();
+
+alert('✅ Password updated successfully! Please sign in with your new password.');
+
+closeAllModals();
+
+// Remove recovery token/hash
+window.history.replaceState(
+  {},
+  document.title,
+  window.location.pathname + window.location.search
+);
+
+// Clear any authenticated UI
+setAuthedUI(null);
+
+// Send user to login screen
+navigate('login');
         }catch(err){ alert('Error: ' + err.message); }
       };
     }

@@ -1311,6 +1311,7 @@
   }
 
   // ---------- PASSWORD RESET (EMAIL ONLY, WITH PRE-FLIGHT CHECK) ----------
+    // ---------- PASSWORD RESET (EMAIL ONLY, WITH RPC PRE-FLIGHT CHECK) ----------
   async function handleResetSubmit(e){
     if(e) e.preventDefault();
     var client = requireClient(); if(!client) return;
@@ -1349,18 +1350,17 @@
     }
 
     // --- Initial "Send Reset Link" flow ---
-    // Pre-flight check: verify email exists in profiles table
+    // Pre-flight check: verify email exists via Database RPC (bypasses RLS safely)
     setLoading(btn, true);
     try{
-      // Check if email exists
-      var { data: profile, error: profileError } = await client
-        .from('profiles')
-        .select('email')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-      if (!profile) {
+      var { data: exists, error: checkError } = await client.rpc('check_email_exists', { email_to_check: email });
+      
+      if (checkError) {
+        console.error('Email check error:', checkError);
+        throw checkError;
+      }
+      
+      if (!exists) {
         alert('❌ This email is not registered with Ganesha Arts. Please check the email or create a new account.');
         setLoading(btn, false, 'Send Reset Link');
         return;
@@ -1379,6 +1379,7 @@
       setLoading(btn, false, 'Send Reset Link');
     }
   }
+ 
 
   // Reset modal to initial state
   function resetResetModal(){

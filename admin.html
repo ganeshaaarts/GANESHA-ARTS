@@ -209,7 +209,12 @@ async function sendReply(mediaFile){if(!activeTicket)return;const text=$('chatIn
   const msg={ticket_id:String(activeTicket.ticket_id),user_id:activeTicket.user_id||null,client_name:activeTicket.client_name||ticketPerson(activeTicket),client_mobile:activeTicket.client_mobile||ticketMobile(activeTicket),client_email:activeTicket.client_email||ticketEmail(activeTicket),sender:'admin',message:text||'(Media attachment)',status:solved?'closed':'running',subject:activeTicket.subject||'Support Conversation',created_at:new Date().toISOString(),issue_solved:solved,media_url:mediaUrl};const r=await db.from('support_messages').insert(msg).select().single();if(r.error){toast('Reply failed: '+r.error.message);return}$('chatInput').value='';$('issueSolved').checked=false;activeTicket.status=solved?'closed':'running';$('chatTicketStatus').textContent=solved?'CLOSED':'RUNNING';toast(solved?'Final reply sent. Ticket closed.':'Reply sent.');await loadTickets();await refreshActiveChat();
   var preview=$('admin-chat-media-preview'); if(preview){ preview.innerHTML=''; preview.classList.add('hidden'); $('admin-chat-file').value=''; }
 }
-$('sendReply').onclick=function(){ sendReply(); };
+$('sendReply').onclick = function(){
+  const fileInput = $('admin-chat-file');
+  const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+  sendReply(file);
+};
+  
 $('resolveChat').onclick=async()=>{if(!activeTicket)return;await markResolved(activeTicket.ticket_id);await refreshActiveChat()};$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendReply();}});
 function closeChat(){if(chatPoll){clearInterval(chatPoll);chatPoll=null}if(chatChannel){try{db.removeChannel(chatChannel)}catch{}chatChannel=null}activeTicket=null;$('chatModal').classList.add('hidden');}
 function openPhoto(url){$('photo').src=url;$('photoModal').classList.remove('hidden')}document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.add('hidden'));document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.add('hidden')});document.onkeydown=e=>{if(e.key==='Escape')document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'))};
